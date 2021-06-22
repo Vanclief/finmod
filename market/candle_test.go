@@ -31,7 +31,7 @@ func saveCandlesToFile(candles *[]Candle, filepath string) error {
 }
 
 func loadCandlesFromFile(filepath string) (*[]Candle, error) {
-	const op = "market.LoadCandlesFromFile"
+	const op = "market.loadCandlesFromFile"
 
 	var candles []Candle
 
