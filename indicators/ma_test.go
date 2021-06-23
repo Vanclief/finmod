@@ -2,6 +2,7 @@ package indicators
 
 import (
 	"bufio"
+	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -12,15 +13,16 @@ import (
 	"github.com/vanclief/finmod/market"
 )
 
-func loadCandlesFromFile(filepath string) ([]market.Candle, error) {
+func loadCandlesFromFile(filepath string) ([]market.Candle, []float32, error) {
 	const op = "loadCandlesFromFile"
 
 	var candles []market.Candle
+	var movingAverage []float32
 
 	// Load a candle dataset example
 	f, err := os.Open(filepath)
 	if err != nil {
-		return nil, ez.Wrap(op, err)
+		return nil, nil, ez.Wrap(op, err)
 	}
 
 	scanner := bufio.NewScanner(f)
@@ -28,34 +30,38 @@ func loadCandlesFromFile(filepath string) ([]market.Candle, error) {
 		text := scanner.Text()
 
 		// Parse each line
-		line := text[1 : len(text)-1]
-		lineArr := strings.Split(line, " ")
+		lineArr := strings.Split(text, ",")
+		if lineArr[0] == "time" {
+			continue
+		}
 
 		// Convert from string to datatypes
 		time, err := strconv.ParseInt(lineArr[0], 10, 32)
 		if err != nil {
-			return nil, ez.Wrap(op, err)
+			return nil, nil, ez.Wrap(op, err)
 		}
 
 		o, err := strconv.ParseFloat(lineArr[1], 64)
 		if err != nil {
-			return nil, ez.Wrap(op, err)
+			return nil, nil, ez.Wrap(op, err)
 		}
 
 		h, err := strconv.ParseFloat(lineArr[2], 64)
 		if err != nil {
-			return nil, ez.Wrap(op, err)
+			return nil, nil, ez.Wrap(op, err)
 		}
 
 		l, err := strconv.ParseFloat(lineArr[3], 64)
 		if err != nil {
-			return nil, ez.Wrap(op, err)
+			return nil, nil, ez.Wrap(op, err)
 		}
 
 		c, err := strconv.ParseFloat(lineArr[4], 64)
 		if err != nil {
-			return nil, ez.Wrap(op, err)
+			return nil, nil, ez.Wrap(op, err)
 		}
+
+		ma, err := strconv.ParseFloat(lineArr[5], 64)
 
 		candle := market.Candle{
 			Time:  time,
@@ -66,52 +72,23 @@ func loadCandlesFromFile(filepath string) ([]market.Candle, error) {
 		}
 
 		candles = append(candles, candle)
+		movingAverage = append(movingAverage, float32(ma))
 	}
 
-	return candles, nil
-}
-
-func loadMAFromFile(filepath string) ([]float32, error) {
-	const op = "loadMAFromFile"
-
-	var arrayMA []float32
-
-	// Load a candle dataset example
-	f, err := os.Open(filepath)
-	if err != nil {
-		return nil, ez.Wrap(op, err)
-	}
-
-	scanner := bufio.NewScanner(f)
-	for scanner.Scan() {
-		text := scanner.Text()
-
-		// Parse each line
-		line := text[1 : len(text)-1]
-		lineArr := strings.Split(line, " ")
-
-		// Convert from string to datatypes
-		ma, err := strconv.ParseFloat(lineArr[2], 64)
-		if err != nil {
-			return nil, ez.Wrap(op, err)
-		}
-
-		arrayMA = append(arrayMA, float32(ma))
-	}
-
-	return arrayMA, nil
+	return candles, movingAverage, nil
 }
 
 func TestMovingAverage(t *testing.T) {
+	length := 20
 
-	candles, err := loadCandlesFromFile("test_dataset/BINANCE_ETHUSD_60.csv")
+	candles, expectedMA, err := loadCandlesFromFile("./test_dataset/BINANCE_ETHUSD_60.csv")
 	assert.Nil(t, err)
 
-	expectedMA, err := loadMAFromFile("test_dataset/BINANCE_ETHUSD_60.csv")
-	assert.Nil(t, err)
-
-	ma, err := MovingAverage(candles, 20)
+	ma, err := MovingAverage(candles, length)
 	assert.Nil(t, err)
 	assert.NotNil(t, candles)
-	assert.Equal(t, expectedMA, ma)
+	for k := range expectedMA[length - 1:] {
+		assert.LessOrEqual(t, math.Abs(float64(expectedMA[length-1+k]-ma[k])), 0.1)
+	}
+
 }
