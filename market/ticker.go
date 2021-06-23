@@ -5,5 +5,5 @@ type Ticker struct {
 	Time   float64
 	Candle *Candle
 	Ask    *OrderBookRow
-	Buy    *OrderBookRow
+	Bid    *OrderBookRow
 }
