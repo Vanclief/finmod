@@ -2,9 +2,9 @@ package market
 
 // OrderBook - A record of active buy and sell orders in a single market
 type OrderBook struct {
-	Time       float64
-	SellOrders []OrderBookRow `json:"sell_orders"`
-	BuyOrders  []OrderBookRow `json:"buy_orders"`
+	Time float64
+	Asks []OrderBookRow `json:"asks"`
+	Bids []OrderBookRow `json:"bids"`
 }
 
 // OrderBookRow - A single order from the order book
