@@ -5,6 +5,8 @@ import (
   "math"
 )
 
+// CheckCandleTimestampInterval returns an integer that represents the minimum timestamp interval
+// in minutes in an array of market.Candle
 func CheckCandleTimestampInterval(candles []market.Candle) int {
   minDiff := -1.0
   for k := range candles {
@@ -16,5 +18,5 @@ func CheckCandleTimestampInterval(candles []market.Candle) int {
       minDiff = newDiff
     }
   }
-  return int(minDiff)
+  return int(minDiff) / 60
 }
