@@ -2,6 +2,7 @@ package market
 
 import (
 	"fmt"
+	"math"
 	"strconv"
 	"time"
 
@@ -24,7 +25,7 @@ func (p *Candle) String() string {
 	return fmt.Sprintf("[Time: %s, Open: %.4f, High: %.4f, Low: %.4f, Close: %.4f, Volume: %.4f]", time, p.Open, p.High, p.Low, p.Close, p.Volume)
 }
 
-// ModifyInterval takes an array of candles and the desired interval in minutes and returns an array of
+// ModifyInterval - takes an array of candles and the desired interval in minutes and returns an array of
 // candles with the market data resampled to fit the new interval
 func ModifyInterval(candles []Candle, minutes int) (*[]Candle, error) {
 	op := "market.ModifyInterval"
@@ -34,13 +35,16 @@ func ModifyInterval(candles []Candle, minutes int) (*[]Candle, error) {
 	if minutes > 60 {
 		modMinutes = minutes % 60
 	}
+
 	if modMinutes == 0 {
 		modMinutes = 60
 	}
+
 	start, err := findFirstIndex(candles, modMinutes)
 	if err != nil {
 		return nil, ez.Wrap(op, err)
 	}
+
 	indexOfFirstCandle := start
 	pivot := candles[start].Time
 	for k, v := range candles[indexOfFirstCandle+1:] {
@@ -53,14 +57,32 @@ func ModifyInterval(candles []Candle, minutes int) (*[]Candle, error) {
 			start = k + indexOfFirstCandle + 1
 		}
 	}
+
 	// compress the rest of the candles
 	compressedCandle, err := compressCandle(candles, start, len(candles))
 	if err != nil {
 		return nil, err
 	}
+
 	newCandles = append(newCandles, compressedCandle)
 
 	return &newCandles, nil
+}
+
+// GetMinInterval - Returns the minimun period interval in minutes from an array of
+// candles
+func GetMinInterval(candles []Candle) int {
+	minDiff := math.MaxFloat64
+	for k := range candles {
+		if k == 0 {
+			continue
+		}
+		newDiff := math.Abs(float64(candles[k].Time - candles[k-1].Time))
+		if newDiff < minDiff {
+			minDiff = newDiff
+		}
+	}
+	return int(minDiff) / 60
 }
 
 // findFirstIndex iterates over the candle array until it finds the first candle with a timestamp that is a

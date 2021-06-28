@@ -13,6 +13,21 @@ import (
 	"github.com/vanclief/finmod/market"
 )
 
+func TestMovingAverage(t *testing.T) {
+	length := 20
+
+	candles, expectedMA, err := loadCandlesFromFile("./test_dataset/BINANCE_ETHUSD_60.csv")
+	assert.Nil(t, err)
+
+	ma, err := MovingAverage(candles, length)
+	assert.Nil(t, err)
+	assert.NotNil(t, candles)
+	for k := range expectedMA[length-1:] {
+		assert.LessOrEqual(t, math.Abs(float64(expectedMA[length-1+k]-ma[k])), 0.1)
+	}
+
+}
+
 func loadCandlesFromFile(filepath string) ([]market.Candle, []float32, error) {
 	const op = "loadCandlesFromFile"
 
@@ -76,19 +91,4 @@ func loadCandlesFromFile(filepath string) ([]market.Candle, []float32, error) {
 	}
 
 	return candles, movingAverage, nil
-}
-
-func TestMovingAverage(t *testing.T) {
-	length := 20
-
-	candles, expectedMA, err := loadCandlesFromFile("./test_dataset/BINANCE_ETHUSD_60.csv")
-	assert.Nil(t, err)
-
-	ma, err := MovingAverage(candles, length)
-	assert.Nil(t, err)
-	assert.NotNil(t, candles)
-	for k := range expectedMA[length - 1:] {
-		assert.LessOrEqual(t, math.Abs(float64(expectedMA[length-1+k]-ma[k])), 0.1)
-	}
-
 }
