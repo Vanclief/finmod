@@ -1,9 +1,8 @@
 package market
 
 import (
-	"math"
-
 	"github.com/vanclief/ez"
+	"math"
 )
 
 // OrderBook - A record of active buy and sell orders in a single market
@@ -26,7 +25,7 @@ func (ob *OrderBook) GetDepth(price float64) (float64, error) {
 	op := "OrderBook.GetDepth"
 
 	if price <= 0 {
-		return 0, ez.New(op, ez.EINVALID, "Price can't be equal or bellow zero", nil)
+		return 0, ez.New(op, ez.EINVALID, "Price can't be equal or below zero", nil)
 	}
 
 	firstAsk, lastAsk := ob.Asks[0], ob.Asks[len(ob.Asks)-1]
