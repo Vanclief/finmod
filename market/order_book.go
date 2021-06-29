@@ -1,8 +1,9 @@
 package market
 
 import (
-	"github.com/vanclief/ez"
 	"math"
+
+	"github.com/vanclief/ez"
 )
 
 // OrderBook - A record of active buy and sell orders in a single market
@@ -16,7 +17,35 @@ type OrderBook struct {
 type OrderBookRow struct {
 	Price       float64 `json:"price"`
 	Volume      float64 `json:"volume"`
-	TotalVolume float64 `json:"total_volume"` // maybe should be called AccumulatedVolume
+	AccumVolume float64 `json:"accum_volume"`
+}
+
+// Display - returns a
+func (ob *OrderBook) Display(side string, rowCount int) []OrderBookRow {
+
+	var rows []OrderBookRow
+
+	if side == "asks" {
+		for j, row := range ob.Asks {
+
+			if j >= rowCount {
+				break
+			}
+
+			rows = append(rows, row)
+		}
+	} else {
+		for j, row := range ob.Bids {
+
+			if j >= rowCount {
+				break
+			}
+
+			rows = append(rows, row)
+		}
+	}
+
+	return rows
 }
 
 // GetDepth - returns the accumulated volume from a determined price
