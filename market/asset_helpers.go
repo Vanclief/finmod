@@ -73,7 +73,7 @@ func NewCryptoAsset(symbol string) (*Asset, error) {
 	case "ZED":
 		return NewAsset(symbol, "ZCash")
 	default:
-		return nil, ez.New(op, ez.ENOTFOUND, "No translatable asset found", nil)
+		return nil, ez.New(op, ez.ENOTFOUND, "No asset with matching symbol found", nil)
 	}
 }
 
@@ -87,7 +87,7 @@ func NewForexAsset(symbol string) (*Asset, error) {
 		return NewAsset(symbol, "Euro")
 
 	default:
-		return nil, ez.New(op, ez.ENOTFOUND, "No translatable asset found", nil)
+		return nil, ez.New(op, ez.ENOTFOUND, "No asset with matching symbol found", nil)
 	}
 }
 
@@ -99,6 +99,6 @@ func NewStockAsset(symbol string) (*Asset, error) {
 		return NewAsset(symbol, "Apple Inc")
 
 	default:
-		return nil, ez.New(op, ez.ENOTFOUND, "No translatable asset found", nil)
+		return nil, ez.New(op, ez.ENOTFOUND, "No asset with matching symbol found", nil)
 	}
 }
