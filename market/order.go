@@ -62,8 +62,13 @@ type OrderRequest struct {
 	Pair   Pair
 	Price  float64
 	Volume float64
+	Cost   float64
 }
 
 func (o *Order) String() string {
 	return fmt.Sprintf("ID: %s Action: %s Type: %s Volume: %.4f Cost: $%.4f", o.ID, o.Action, o.Type, o.Volume, o.Cost)
+}
+
+func (o *OrderRequest) String() string {
+	return fmt.Sprintf("Action: %s Type: %s Volume: %.4f Cost: $%.4f", o.Action, o.Type, o.Volume, o.Cost)
 }
