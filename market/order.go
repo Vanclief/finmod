@@ -2,8 +2,7 @@ package market
 
 import (
 	"fmt"
-
-	"github.com/rs/xid"
+	"time"
 )
 
 // ActionType determines if the action is to buy or to sell
@@ -26,29 +25,45 @@ const (
 	LimitOrder OrderType = "limit"
 )
 
-// Order is a transaction instruction to be executed
+// OrderStatus - determines the status of the order
+type OrderStatus string
+
+const (
+	//  FulfilledStatus - The entirety of the order was filled
+	FulfilledStatus OrderStatus = "fulfilled"
+	//  PartialFillStatus - A the order has been filled partialy
+	PartialFillStatus OrderStatus = "partial_fill"
+	//  UnfilledStatus - The order has not been filled
+	UnfilledStatus OrderStatus = "unfilled"
+	//  CanceledStatus - The order has been cancelled
+	CanceledStatus OrderStatus = "canceled"
+)
+
+// Order - Set of instructions to purchase or sell an asset
 type Order struct {
-	ID       xid.ID
-	Action   ActionType
-	Type     OrderType
-	Quantity float64
-	Total    float64
+	ID             string
+	Action         ActionType
+	Type           OrderType
+	Pair           Pair
+	Price          float64
+	Volume         float64
+	ExecutedVolume float64
+	Cost           float64
+	Status         OrderStatus
+	OpenTime       time.Time
+	CloseTime      time.Time
+	Trades         []Trade
 }
 
-// NewOrder creates and returns a new Order
-func NewOrder(action ActionType, orderType OrderType, quantity, total float64) *Order {
-
-	order := &Order{
-		ID:       xid.New(),
-		Action:   action,
-		Type:     orderType,
-		Quantity: quantity,
-		Total:    total,
-	}
-
-	return order
+// OrderRequest - Request to create an order
+type OrderRequest struct {
+	Action ActionType
+	Type   OrderType
+	Pair   Pair
+	Price  float64
+	Volume float64
 }
 
 func (o *Order) String() string {
-	return fmt.Sprintf("ID: %s Action: %s Type: %s Quantity: %.4f Total: $%.4f", o.ID.String()[0:8], o.Action, o.Type, o.Quantity, o.Total)
+	return fmt.Sprintf("ID: %s Action: %s Type: %s Volume: %.4f Cost: $%.4f", o.ID, o.Action, o.Type, o.Volume, o.Cost)
 }
