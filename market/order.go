@@ -48,6 +48,7 @@ type Order struct {
 	Price          float64
 	Volume         float64
 	ExecutedVolume float64
+	Fee            float64
 	Cost           float64
 	Status         OrderStatus
 	OpenTime       time.Time
