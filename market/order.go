@@ -46,7 +46,7 @@ type Order struct {
 	ID             string
 	Action         ActionType
 	Type           OrderType
-	Pair           Pair
+	Pair           *Pair
 	Price          float64
 	Volume         float64
 	ExecutedVolume float64
