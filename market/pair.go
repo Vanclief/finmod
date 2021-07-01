@@ -1,6 +1,10 @@
 package market
 
-import "github.com/vanclief/ez"
+import (
+	"fmt"
+
+	"github.com/vanclief/ez"
+)
 
 // Pair - Quotation of two different assets or currencies, with the value of one being quoted against the other.
 type Pair struct {
@@ -19,4 +23,9 @@ func NewPair(base, quote *Asset) (*Pair, error) {
 	}
 
 	return &Pair{Base: base, Quote: quote}, nil
+}
+
+// String - Implementes Stringer interface
+func (p *Pair) String() string {
+	return fmt.Sprintf("%s/%s", p.Base.Symbol, p.Quote.Symbol)
 }

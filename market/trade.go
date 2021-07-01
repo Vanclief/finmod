@@ -3,18 +3,15 @@ package market
 import (
 	"fmt"
 	"time"
-
-	"github.com/rs/xid"
 )
 
 // Trade represents a market trade
 type Trade struct {
-	ID            xid.ID
-	ExchangeID    string
+	ID            string
 	ExecutionDate time.Time
 	Action        ActionType
 	OrderType     OrderType
-	Pair          string
+	Pair          *Pair
 	Price         float64
 	Quantity      float64
 	Fee           float64
@@ -22,7 +19,7 @@ type Trade struct {
 }
 
 // NewTrade creates a new trade
-func NewTrade(ExchangeID string, executionDate time.Time, actionType ActionType, orderType OrderType, pair string, price, quantity, cost float64) *Trade {
+func NewTrade(id string, executionDate time.Time, actionType ActionType, orderType OrderType, pair *Pair, price, quantity, cost float64) *Trade {
 
 	var fee float64
 
@@ -33,8 +30,7 @@ func NewTrade(ExchangeID string, executionDate time.Time, actionType ActionType,
 	}
 
 	trade := &Trade{
-		ID:            xid.New(),
-		ExchangeID:    ExchangeID,
+		ID:            id,
 		ExecutionDate: executionDate,
 		Action:        actionType,
 		OrderType:     orderType,
@@ -49,5 +45,5 @@ func NewTrade(ExchangeID string, executionDate time.Time, actionType ActionType,
 }
 
 func (t *Trade) String() string {
-	return fmt.Sprintf("ID: %s E_ID: %s Date: %s Action: %s Type: %s Pair: %s Price: $%.2f Quantity: %.4f Fee: $%.2f Cost: $%.2f", t.ID.String()[0:8], t.ExchangeID, t.ExecutionDate, t.Action, t.OrderType, t.Pair, t.Price, t.Quantity, t.Fee, t.Cost)
+	return fmt.Sprintf("ID: %s Date: %s Action: %s Type: %s Pair: %s Price: $%.2f Quantity: %.4f Fee: $%.2f Cost: $%.2f", t.ID, t.ExecutionDate, t.Action, t.OrderType, t.Pair, t.Price, t.Quantity, t.Fee, t.Cost)
 }

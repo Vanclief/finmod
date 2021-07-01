@@ -22,7 +22,7 @@ const (
 type Position struct {
 	ID               xid.ID
 	Type             PositionType
-	Pair             string
+	Pair             *Pair
 	Open             bool
 	OpenPrice        float64
 	ClosePrice       float64
@@ -61,7 +61,7 @@ func NewPosition(trade *Trade) *Position {
 }
 
 func (p *Position) String() string {
-	return fmt.Sprintf("ID: %s Type: %s Pair: %s Open: %t OpenPrice: %.2f ClosePrice: %.2f Quantity: %.4f Profit: %.2f OpenDate: %s CloseDate: %s # Trades: %d", p.ID.String()[0:8], p.Type, p.Pair, p.Open, p.OpenPrice, p.ClosePrice, p.Quantity, p.Profit, p.OpenDate, p.CloseDate, len(p.Trades))
+	return fmt.Sprintf("ID: %s Type: %s Pair: %s Open: %t OpenPrice: %.2f ClosePrice: %.2f Quantity: %.4f Profit: %.2f OpenDate: %s CloseDate: %s # Trades: %d", p.ID.String()[0:8], p.Type, p.Pair.String(), p.Open, p.OpenPrice, p.ClosePrice, p.Quantity, p.Profit, p.OpenDate, p.CloseDate, len(p.Trades))
 }
 
 // Update updates the P\L of a position
