@@ -46,7 +46,7 @@ type Order struct {
 	Type           OrderType
 	Pair           Pair
 	Price          float64
-	Quantity       float64
+	Volume         float64
 	ExecutedVolume float64
 	Cost           float64
 	Status         OrderStatus
@@ -66,7 +66,7 @@ type OrderRequest struct {
 }
 
 func (o *Order) String() string {
-	return fmt.Sprintf("ID: %s Action: %s Type: %s Quantity: %.4f Cost: $%.4f", o.ID, o.Action, o.Type, o.Quantity, o.Cost)
+	return fmt.Sprintf("ID: %s Action: %s Type: %s Volume: %.4f Cost: $%.4f", o.ID, o.Action, o.Type, o.Volume, o.Cost)
 }
 
 func (o *OrderRequest) String() string {
