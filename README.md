@@ -6,6 +6,11 @@ Golang library that contains data structures for financial models as well as tec
 
 `go get github.com/vanclief/finmod`
 
+
+## Usage
+
+TODO
+
 ## Development
 
 Run all tests: 
