@@ -1,10 +1,21 @@
 package indicators
 
 import (
+	"github.com/vanclief/ez"
 	"github.com/vanclief/finmod/market"
 )
 
 func MovingAverage(candles []market.Candle, length int) ([]float32, error) {
+	op := "movingAverage"
+	if candles == nil {
+		return nil, ez.New(op, ez.EINVALID, "candle array missing", nil)
+	}
+	if len(candles) < length {
+		return nil, ez.New(op, ez.EINVALID, "length argument is bigger than market.Candle length", nil)
+	}
+	if length <= 0 {
+		return nil, ez.New(op, ez.EINVALID, "length cannot be negative", nil)
+	}
 	var movingAverage []float32
 
 	i := 0
