@@ -35,7 +35,7 @@ func TestOrderBookGetDepth(t *testing.T) {
 
 func getTestOrderBook() OrderBook {
 	return OrderBook{
-		Time: float64(time.Now().Unix()),
+		Time: time.Now().Unix(),
 		Asks: []OrderBookRow{
 			{
 				Price:       0,
