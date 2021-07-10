@@ -7,15 +7,15 @@ import (
 
 func MovingAverage(candles []market.Candle, length int) ([]float32, error) {
 	op := "movingAverage"
+
 	if candles == nil {
-		return nil, ez.New(op, ez.EINVALID, "candle array missing", nil)
+		return nil, ez.New(op, ez.EINVALID, "Candle array missing", nil)
+	} else if len(candles) < length {
+		return nil, ez.New(op, ez.EINVALID, "Length argument is larger than the length of candles", nil)
+	} else if length <= 0 {
+		return nil, ez.New(op, ez.EINVALID, "Length can't be less than 1", nil)
 	}
-	if len(candles) < length {
-		return nil, ez.New(op, ez.EINVALID, "length argument is bigger than market.Candle length", nil)
-	}
-	if length <= 0 {
-		return nil, ez.New(op, ez.EINVALID, "length cannot be negative", nil)
-	}
+
 	var movingAverage []float32
 
 	i := 0
