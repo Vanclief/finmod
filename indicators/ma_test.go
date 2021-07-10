@@ -28,6 +28,9 @@ func TestMovingAverage(t *testing.T) {
 	for k := range expectedMA[length-1:] {
 		assert.LessOrEqual(t, math.Abs(float64(expectedMA[length-1+k]-ma[k])), 0.1)
 	}
+	ma, err = MovingAverage(candles[:length - 4], length)
+	assert.NotNil(t, err)
+	assert.Nil(t, ma)
 
 }
 
