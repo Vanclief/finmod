@@ -31,14 +31,14 @@ const (
 type OrderStatus string
 
 const (
-	//  FulfilledStatus - The entirety of the order was filled
-	FulfilledStatus OrderStatus = "fulfilled"
-	//  PartialFillStatus - A the order has been filled partialy
-	PartialFillStatus OrderStatus = "partial_fill"
-	//  UnfilledStatus - The order has not been filled
-	UnfilledStatus OrderStatus = "unfilled"
-	//  CanceledStatus - The order has been cancelled
-	CanceledStatus OrderStatus = "canceled"
+	//  FulfilledOrder - The entirety of the order was filled
+	FulfilledOrder OrderStatus = "fulfilled"
+	//  PartialyFilledOrder - A the order has been filled partialy
+	PartialyFilledOrder OrderStatus = "partial_fill"
+	//  UnfilledOrder - The order has not been filled
+	UnfilledOrder OrderStatus = "unfilled"
+	//  CanceledOrder - The order has been cancelled
+	CanceledOrder OrderStatus = "canceled"
 )
 
 // Order - Set of instructions to purchase or sell an asset
