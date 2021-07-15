@@ -22,7 +22,15 @@ type Candle struct {
 
 func (p *Candle) String() string {
 	time := time.Unix(p.Time, 0)
-	return fmt.Sprintf("[Time: %s, Open: %.4f, High: %.4f, Low: %.4f, Close: %.4f, Volume: %.4f]", time, p.Open, p.High, p.Low, p.Close, p.Volume)
+	return fmt.Sprintf(
+		"Time: %s | Open: %.4f | High: %.4f | Low: %.4f | Close: %.4f | Volume: %.4f",
+		time,
+		p.Open,
+		p.High,
+		p.Low,
+		p.Close,
+		p.Volume,
+	)
 }
 
 // ModifyInterval - takes an array of candles and the desired interval in minutes and returns an array of
