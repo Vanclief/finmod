@@ -57,12 +57,18 @@ type Order struct {
 }
 
 func (o *Order) String() string {
+
+	var pairStr string
+	if o.Pair != nil {
+		pairStr = o.Pair.String()
+	}
+
 	return fmt.Sprintf(
 		"ID: %s | Action: %s | Type: %s | Pair: %s | Price: %.4f | Volume: %.4f | ExecVolume: %.4f | Fee: $%.4f | Cost: $%.4f | Status: %s | OT: %s | CT: %s",
 		o.ID,
 		o.Action,
 		o.Type,
-		o.Pair.String(),
+		pairStr,
 		o.Price,
 		o.Volume,
 		o.ExecutedVolume,

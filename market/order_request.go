@@ -49,7 +49,21 @@ func NewOrderRequest(pair *Pair, action ActionType, orderType OrderType, quantit
 }
 
 func (o *OrderRequest) String() string {
-	return fmt.Sprintf("Action: %s | Type: %s | Pair: %s | Quantity: %.4f | Price: $%.4f | Total: $%.4f", o.Action, o.Type, o.Pair.String(), o.Quantity, o.Price, o.Total)
+
+	var pairStr string
+	if o.Pair != nil {
+		pairStr = o.Pair.String()
+	}
+
+	return fmt.Sprintf(
+		"Action: %s | Type: %s | Pair: %s | Quantity: %.4f | Price: $%.4f | Total: $%.4f",
+		o.Action,
+		o.Type,
+		pairStr,
+		o.Quantity,
+		o.Price,
+		o.Total,
+	)
 }
 
 func (o *OrderRequest) CalculateFields(currentPrice float64) (*OrderRequest, error) {
