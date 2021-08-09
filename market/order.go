@@ -3,6 +3,9 @@ package market
 import (
 	"fmt"
 	"time"
+
+	"github.com/vanclief/ez"
+	"github.com/vanclief/state/interfaces"
 )
 
 // ActionType determines if the action is to buy or to sell
@@ -53,7 +56,31 @@ type Order struct {
 	Status         OrderStatus
 	OpenTime       time.Time
 	CloseTime      time.Time
-	Trades         []Trade
+	Trades         []string
+}
+
+// GetSchema returns the database schema for the Order model
+func (o *Order) GetSchema() *interfaces.Schema {
+	return &interfaces.Schema{Name: "orders", PKey: "id"}
+}
+
+// GetID returns the ID from the Order model
+func (o *Order) GetID() string {
+	return o.ID
+}
+
+// Update sets the value of the Order instance
+func (o *Order) Update(i interface{}) error {
+	const op = "Order.Update"
+
+	order, ok := i.(*Order)
+	if !ok {
+		return ez.New(op, ez.EINVALID, "Provided interface is not of type Order", nil)
+	}
+
+	*o = *order
+
+	return nil
 }
 
 func (o *Order) String() string {

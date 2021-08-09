@@ -6,6 +6,7 @@ import (
 
 	"github.com/rs/xid"
 	"github.com/vanclief/ez"
+	"github.com/vanclief/state/interfaces"
 )
 
 // PositionType determines if its a long or short position
@@ -20,19 +21,18 @@ const (
 
 // Position represents a market position
 type Position struct {
-	ID               xid.ID
+	ID               string
 	Type             PositionType
 	Pair             *Pair
 	Open             bool
 	OpenPrice        float64
 	ClosePrice       float64
 	Quantity         float64
-	CurrentValue     float64
 	Profit           float64
 	ProfitPercentage float64
 	OpenDate         time.Time
 	CloseDate        time.Time
-	Trades           []Trade
+	Trades           []string
 }
 
 // NewPosition creates a new Position
@@ -46,36 +46,45 @@ func NewPosition(trade *Trade) *Position {
 	}
 
 	position := &Position{
-		ID:           xid.New(),
-		Type:         positionType,
-		Pair:         trade.Pair,
-		OpenPrice:    trade.Price,
-		Quantity:     trade.Quantity,
-		CurrentValue: trade.Price * trade.Quantity,
-		Open:         true,
-		OpenDate:     trade.ExecutionDate,
-		Trades:       []Trade{*trade},
+		ID:        xid.New().String(),
+		Type:      positionType,
+		Pair:      trade.Pair,
+		OpenPrice: trade.Price,
+		Quantity:  trade.Quantity,
+		Open:      true,
+		OpenDate:  trade.ExecutionDate,
+		Trades:    []string{trade.ID},
 	}
 
 	return position
 }
 
-func (p *Position) String() string {
-	return fmt.Sprintf("ID: %s Type: %s Pair: %s Open: %t OpenPrice: %.2f ClosePrice: %.2f Quantity: %.4f Profit: %.2f OpenDate: %s CloseDate: %s # Trades: %d", p.ID.String()[0:8], p.Type, p.Pair.String(), p.Open, p.OpenPrice, p.ClosePrice, p.Quantity, p.Profit, p.OpenDate, p.CloseDate, len(p.Trades))
+// GetSchema returns the database schema for the Position model
+func (p *Position) GetSchema() *interfaces.Schema {
+	return &interfaces.Schema{Name: "positions", PKey: "id"}
 }
 
-// Update updates the P\L of a position
-func (p *Position) Update(candle *Candle) error {
+// GetID returns the ID from the Position model
+func (p *Position) GetID() string {
+	return p.ID
+}
 
-	if p.Type == LongPosition {
-		p.Profit = (candle.Close - p.OpenPrice) * p.Quantity
-	} else {
-		p.Profit = (p.OpenPrice - candle.Close) * p.Quantity
+// Update sets the value of the Position instance
+func (p *Position) Update(i interface{}) error {
+	const op = "Position.Update"
+
+	position, ok := i.(*Position)
+	if !ok {
+		return ez.New(op, ez.EINVALID, "Provided interface is not of type Position", nil)
 	}
 
-	p.CurrentValue = candle.Close * p.Quantity
+	*p = *position
 
 	return nil
+}
+
+func (p *Position) String() string {
+	return fmt.Sprintf("ID: %s Type: %s Pair: %s Open: %t OpenPrice: %.2f ClosePrice: %.2f Quantity: %.4f Profit: %.2f OpenDate: %s CloseDate: %s # Trades: %d", p.ID[0:8], p.Type, p.Pair.String(), p.Open, p.OpenPrice, p.ClosePrice, p.Quantity, p.Profit, p.OpenDate, p.CloseDate, len(p.Trades))
 }
 
 // Modify receives a new trade that updates the position
@@ -106,7 +115,7 @@ func (p *Position) add(trade *Trade) error {
 
 	p.OpenPrice = (p.OpenPrice * p.Quantity / totalQuantity) + (trade.Price * trade.Quantity / totalQuantity)
 	p.Quantity = totalQuantity
-	p.Trades = append(p.Trades, *trade)
+	p.Trades = append(p.Trades, trade.ID)
 
 	return nil
 }
@@ -137,7 +146,7 @@ func (p *Position) substract(trade *Trade) error {
 		p.Quantity = totalQuantity
 	}
 
-	p.Trades = append(p.Trades, *trade)
+	p.Trades = append(p.Trades, trade.ID)
 
 	return nil
 }

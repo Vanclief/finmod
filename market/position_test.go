@@ -24,7 +24,7 @@ func TestNewPosition(t *testing.T) {
 	assert.Equal(t, 10.4233, position.Quantity)
 	assert.Equal(t, true, position.Open)
 	assert.Len(t, position.Trades, 1)
-	assert.Equal(t, *trade, position.Trades[0])
+	assert.Equal(t, trade.ID, position.Trades[0])
 
 	// Should be able to create a new short position from a trade
 	trade = NewTrade("TO2WZX", time.Now(), SellAction, MarketOrder, pair, 14.39, 10.4233, 150)
@@ -37,7 +37,7 @@ func TestNewPosition(t *testing.T) {
 	assert.Equal(t, 10.4233, position.Quantity)
 	assert.Equal(t, true, position.Open)
 	assert.Len(t, position.Trades, 1)
-	assert.Equal(t, *trade, position.Trades[0])
+	assert.Equal(t, trade.ID, position.Trades[0])
 }
 
 func TestModifyPosition(t *testing.T) {
@@ -56,7 +56,7 @@ func TestModifyPosition(t *testing.T) {
 	assert.Equal(t, 59.10879, position.Quantity)
 	assert.Equal(t, true, position.Open)
 	assert.Len(t, position.Trades, 2)
-	assert.Equal(t, *trade2, position.Trades[1])
+	assert.Equal(t, trade2.ID, position.Trades[1])
 
 	// Case 2: Should be able to modify a long position with a new short trade that reduces the size
 	trade3 := NewTrade("TCS6CS", time.Now(), SellAction, MarketOrder, pair, 10.192, 48.68549, 496.202)
@@ -65,7 +65,7 @@ func TestModifyPosition(t *testing.T) {
 	assert.Equal(t, 10.423299999999998, position.Quantity)
 	assert.Equal(t, true, position.Open)
 	assert.Len(t, position.Trades, 3)
-	assert.Equal(t, *trade3, position.Trades[2])
+	assert.Equal(t, trade3.ID, position.Trades[2])
 
 	// Case 3: Should be able to modify a long position with a new short trade that closes the position
 	trade4 := NewTrade("TCS6CS", time.Now(), SellAction, MarketOrder, pair, 15.39, 10.4233, 160.4233)
@@ -76,7 +76,7 @@ func TestModifyPosition(t *testing.T) {
 	assert.Equal(t, 10.423299999999998, position.Quantity)
 	assert.Equal(t, 6.625831779999961, position.Profit)
 	assert.Len(t, position.Trades, 4)
-	assert.Equal(t, *trade4, position.Trades[3])
+	assert.Equal(t, trade4.ID, position.Trades[3])
 
 	// Case 4: Should be able to modify a short position with a new short trade that increments the position size
 	trade5 := NewTrade("TY6CIM", time.Now(), SellAction, MarketOrder, pair, 14.39, 10.4233, 150)
@@ -88,7 +88,7 @@ func TestModifyPosition(t *testing.T) {
 	assert.Equal(t, 59.10879, position.Quantity)
 	assert.Equal(t, true, position.Open)
 	assert.Len(t, position.Trades, 2)
-	assert.Equal(t, *trade6, position.Trades[1])
+	assert.Equal(t, trade6.ID, position.Trades[1])
 
 	// Case 5: Should be able to modify a short position with a new long trade that reduces the size
 	trade7 := NewTrade("TA78IA", time.Now(), BuyAction, MarketOrder, pair, 15.39, 10.4233, 160.4233)
@@ -97,7 +97,7 @@ func TestModifyPosition(t *testing.T) {
 	assert.Equal(t, 9.97790541042105, position.OpenPrice)
 	assert.Equal(t, 48.68549, position.Quantity)
 	assert.Len(t, position.Trades, 3)
-	assert.Equal(t, *trade7, position.Trades[2])
+	assert.Equal(t, trade7.ID, position.Trades[2])
 
 	// Case 6: Should be able to modify a short position with a new long trade that closes the position
 	trade8 := NewTrade("T20AGT", time.Now(), BuyAction, MarketOrder, pair, 9.39, 48.68549, 457.61)
@@ -108,5 +108,5 @@ func TestModifyPosition(t *testing.T) {
 	assert.Equal(t, 48.68549, position.Quantity)
 	assert.Equal(t, 28.62246297999989, position.Profit)
 	assert.Len(t, position.Trades, 4)
-	assert.Equal(t, *trade8, position.Trades[3])
+	assert.Equal(t, trade8.ID, position.Trades[3])
 }
