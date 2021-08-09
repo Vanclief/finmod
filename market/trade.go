@@ -10,15 +10,15 @@ import (
 
 // Trade represents a market trade
 type Trade struct {
-	ID            string
-	ExecutionDate time.Time
-	Action        ActionType
-	OrderType     OrderType
-	Pair          *Pair
-	Price         float64
-	Quantity      float64
-	Fee           float64
-	Cost          float64
+	ID            string     `json:"id"`
+	ExecutionDate time.Time  `json:"execution_date"`
+	Action        ActionType `json:"action"`
+	OrderType     OrderType  `json:"order_type"`
+	Pair          *Pair      `json:"pair"`
+	Price         float64    `json:"price"`
+	Quantity      float64    `json:"quantity"`
+	Fee           float64    `json:"fee"`
+	Cost          float64    `json:"cost"`
 }
 
 // NewTrade creates a new trade

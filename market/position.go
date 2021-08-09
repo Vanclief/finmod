@@ -21,18 +21,18 @@ const (
 
 // Position represents a market position
 type Position struct {
-	ID               string
-	Type             PositionType
-	Pair             *Pair
-	Open             bool
-	OpenPrice        float64
-	ClosePrice       float64
-	Quantity         float64
-	Profit           float64
-	ProfitPercentage float64
-	OpenDate         time.Time
-	CloseDate        time.Time
-	Trades           []string
+	ID               string       `json:"id"`
+	Type             PositionType `json:"type"`
+	Pair             *Pair        `json:"pair"`
+	Open             bool         `json:"open"`
+	OpenPrice        float64      `json:"open_price"`
+	ClosePrice       float64      `json:"close_price"`
+	Quantity         float64      `json:"quantity"`
+	Profit           float64      `json:"profit"`
+	ProfitPercentage float64      `json:"profit_percentage"`
+	OpenDate         time.Time    `json:"open_date"`
+	CloseDate        time.Time    `json:"close_date"`
+	Trades           []string     `json:"trades"`
 }
 
 // NewPosition creates a new Position

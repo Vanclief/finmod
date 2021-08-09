@@ -44,19 +44,19 @@ const (
 
 // Order - Set of instructions to purchase or sell an asset
 type Order struct {
-	ID             string
-	Action         ActionType
-	Type           OrderType
-	Pair           *Pair
-	Price          float64
-	Volume         float64
-	ExecutedVolume float64
-	Fee            float64
-	Cost           float64
-	Status         OrderStatus
-	OpenTime       time.Time
-	CloseTime      time.Time
-	Trades         []string
+	ID             string      `json:"id"`
+	Action         ActionType  `json:"action"`
+	Type           OrderType   `json:"type"`
+	Pair           *Pair       `json:"pair"`
+	Price          float64     `json:"price"`
+	Volume         float64     `json:"volume"`
+	ExecutedVolume float64     `json:"executed_volume"`
+	Fee            float64     `json:"fee"`
+	Cost           float64     `json:"cost"`
+	Status         OrderStatus `json:"status"`
+	OpenTime       time.Time   `json:"open_time"`
+	CloseTime      time.Time   `json:"close_time"`
+	Trades         []string    `json:"trades"`
 }
 
 // GetSchema returns the database schema for the Order model

@@ -2,7 +2,7 @@ package market
 
 // BalanceSnapshot - An snapshot of the total amount of assets
 type BalanceSnapshot struct {
-	Time     float64
+	Time     float64   `json:"time"`
 	Balances []Balance `json:"balances"`
 }
 

@@ -8,8 +8,8 @@ import (
 
 // Pair - Quotation of two different assets or currencies, with the value of one being quoted against the other.
 type Pair struct {
-	Base  *Asset
-	Quote *Asset
+	Base  *Asset `json:"base"`
+	Quote *Asset `json:"quote"`
 }
 
 // NewPair creates a new Pair from two assets

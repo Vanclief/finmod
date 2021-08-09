@@ -8,7 +8,7 @@ import (
 
 // OrderBook - A record of active buy and sell orders in a single market
 type OrderBook struct {
-	Time int64
+	Time int64          `json:"time"`
 	Asks []OrderBookRow `json:"asks"` // ordered from lowest to highest
 	Bids []OrderBookRow `json:"bids"` // ordered from highest to lowest
 }
