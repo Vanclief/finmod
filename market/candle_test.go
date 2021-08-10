@@ -30,7 +30,7 @@ func saveCandlesToFile(candles *[]Candle, filepath string) error {
 	return nil
 }
 
-func loadCandlesFromFile(filepath string) (*[]Candle, error) {
+func loadCandlesFromFile(filepath string) ([]Candle, error) {
 	const op = "market.loadCandlesFromFile"
 
 	var candles []Candle
@@ -92,7 +92,7 @@ func loadCandlesFromFile(filepath string) (*[]Candle, error) {
 		candles = append(candles, candle)
 	}
 
-	return &candles, nil
+	return candles, nil
 }
 
 func TestChangeGranularity(t *testing.T) {
@@ -108,19 +108,19 @@ func TestChangeGranularity(t *testing.T) {
 	assert.Nil(t, err)
 
 	// Change granularity to 5 min
-	candles, err := ModifyInterval(*candles1Min, 5)
+	candles, err := ModifyInterval(candles1Min, 5)
 	assert.Nil(t, err)
 	assert.NotNil(t, candles)
 	assert.Equal(t, candles5Min, candles)
 
 	// Change granularity to 15 min
-	candles, err = ModifyInterval(*candles1Min, 15)
+	candles, err = ModifyInterval(candles1Min, 15)
 	assert.Nil(t, err)
 	assert.NotNil(t, candles)
 	assert.Equal(t, candles15Min, candles)
 
 	// Change granularity to 1 Hour
-	candles, err = ModifyInterval(*candles1Min, 60)
+	candles, err = ModifyInterval(candles1Min, 60)
 	assert.Nil(t, err)
 	assert.NotNil(t, candles)
 	assert.Equal(t, candles1H, candles)

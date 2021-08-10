@@ -57,6 +57,7 @@ type Order struct {
 	OpenTime       time.Time   `json:"open_time"`
 	CloseTime      time.Time   `json:"close_time"`
 	Trades         []string    `json:"trades"`
+	Tag            string      `json:"tag"`
 }
 
 // GetSchema returns the database schema for the Order model

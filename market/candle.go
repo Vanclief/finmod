@@ -35,7 +35,7 @@ func (p *Candle) String() string {
 
 // ModifyInterval - takes an array of candles and the desired interval in minutes and returns an array of
 // candles with the market data resampled to fit the new interval
-func ModifyInterval(candles []Candle, minutes int) (*[]Candle, error) {
+func ModifyInterval(candles []Candle, minutes int) ([]Candle, error) {
 	op := "market.ModifyInterval"
 
 	var newCandles []Candle
@@ -74,7 +74,7 @@ func ModifyInterval(candles []Candle, minutes int) (*[]Candle, error) {
 
 	newCandles = append(newCandles, compressedCandle)
 
-	return &newCandles, nil
+	return newCandles, nil
 }
 
 // GetMinInterval - Returns the minimun period interval in minutes from an array of
