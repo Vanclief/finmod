@@ -19,6 +19,7 @@ type Trade struct {
 	Quantity      float64    `json:"quantity"`
 	Fee           float64    `json:"fee"`
 	Cost          float64    `json:"cost"`
+	Tag           string     `json:"tag"`
 }
 
 // NewTrade creates a new trade

@@ -36,4 +36,10 @@ func TestWithinTimeWindow(t *testing.T) {
 	ok, err = WithinHours(candle, "12:09", "20:10")
 	assert.Nil(t, err)
 	assert.False(t, ok)
+
+	// Case 6: Is within the time window
+	ok, err = WithinHours(candle, "00:00", "23:59")
+	assert.Nil(t, err)
+	assert.True(t, ok)
+
 }

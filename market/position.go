@@ -34,6 +34,7 @@ type Position struct {
 	CloseDate        time.Time    `json:"close_date"`
 	Trades           []string     `json:"trades"`
 	Tag              string       `json:"tag"`
+	Data             string       `json:"data"`
 }
 
 // NewPosition creates a new Position
