@@ -66,7 +66,7 @@ func FindKeyLevels(candles []market.Candle) ([]KeyLevel, error) {
 	}
 
 	sort.Slice(reducedLevels, func(i, j int) bool {
-		return reducedLevels[i].CreatedAt.Before(reducedLevels[j].CreatedAt)
+		return reducedLevels[i].CreatedAt.After(reducedLevels[j].CreatedAt)
 	})
 
 	return reducedLevels, nil
