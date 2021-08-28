@@ -1,23 +1,19 @@
 package strategy
 
 import (
-	"fmt"
-	"time"
-
+	"github.com/rs/xid"
 	"github.com/vanclief/ez"
-	"github.com/vanclief/go-crypto/sha"
-	"github.com/vanclief/go-crypto/utils"
 	"github.com/vanclief/state/interfaces"
 )
 
 // Annotation - A note of explanation or comment added to the graph
 type Annotation struct {
-	ID    string    `json:"id"`
-	Time  time.Time `json:"time"`
-	Price float64   `json:"price"`
-	Tag   string    `json:"tag"`
-	Type  string    `json:"type"`
-	Note  string    `json:"note"`
+	ID      string  `json:"id"`
+	Time    int64   `json:"time"`
+	Price   float64 `json:"price"`
+	Tag     string  `json:"tag"`
+	Label   string  `json:"label"`
+	Tooltip string  `json:"tooltip"`
 }
 
 // GetSchema returns the database schema for the Annotation model
@@ -45,17 +41,14 @@ func (a *Annotation) Update(i interface{}) error {
 }
 
 // NewAnnotation
-func NewAnnotation(t time.Time, price float64, kind, note string) *Annotation {
-
-	msg := fmt.Sprintf("%s, %f, %s, %s", t, price, kind, note)
-	hash := sha.RandomSHA256(msg)
+func NewAnnotation(t int64, price float64, label, tooltip string) *Annotation {
 
 	annotation := &Annotation{
-		ID:    utils.BytesToHex(hash.Value),
-		Time:  t,
-		Price: price,
-		Type:  kind,
-		Note:  note,
+		ID:      xid.New().String(),
+		Time:    t,
+		Price:   price,
+		Label:   label,
+		Tooltip: tooltip,
 	}
 
 	return annotation
