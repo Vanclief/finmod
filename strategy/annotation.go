@@ -43,13 +43,12 @@ func (a *Annotation) Update(i interface{}) error {
 }
 
 // NewAnnotation
-func NewAnnotation(t time.Time, price float64, tag, kind, note string) *Annotation {
+func NewAnnotation(t time.Time, price float64, kind, note string) *Annotation {
 
 	annotation := &Annotation{
 		ID:    xid.New().String(),
 		Time:  t,
 		Price: price,
-		Tag:   tag,
 		Type:  kind,
 		Note:  note,
 	}
