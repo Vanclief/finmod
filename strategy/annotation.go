@@ -10,8 +10,8 @@ import (
 
 // Annotation - A note of explanation or comment added to the graph
 type Annotation struct {
-	ID    string    `json:"id"`
-	Time  time.Time `json:"time"`
+	ID    string    `json:"id" sql:",pk"`
+	Time  time.Time `json:"time" sql:",pk"`
 	Price float64   `json:"price"`
 	Tag   string    `json:"tag"`
 	Type  string    `json:"type"`
