@@ -1,6 +1,8 @@
 package strategy
 
-import "github.com/vanclief/finmod/market"
+import (
+	"github.com/vanclief/finmod/market"
+)
 
 // Tick - The object that is passed on every tick
 type Tick struct {
@@ -16,6 +18,7 @@ type Tick struct {
 type Actions struct {
 	OpenOrders  []market.OrderRequest
 	CloseOrders []market.Order
+	Annotations []Annotation
 }
 
 // Strategy is the interface of a strategy implementation
