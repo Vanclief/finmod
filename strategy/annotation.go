@@ -8,12 +8,13 @@ import (
 
 // Annotation - A note of explanation or comment added to the graph
 type Annotation struct {
-	ID      string  `json:"id"`
-	Time    int64   `json:"time"`
-	Price   float64 `json:"price"`
-	Tag     string  `json:"tag"`
-	Label   string  `json:"label"`
-	Tooltip string  `json:"tooltip"`
+	ID           string  `json:"id"`
+	Time         int64   `json:"time"`
+	CreationTime int64   `json:"creation_time"`
+	Price        float64 `json:"price"`
+	Tag          string  `json:"tag"`
+	Label        string  `json:"label"`
+	Tooltip      string  `json:"tooltip"`
 }
 
 // GetSchema returns the database schema for the Annotation model
