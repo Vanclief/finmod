@@ -16,7 +16,7 @@ import (
 func TestMovingAverage(t *testing.T) {
 	length := 20
 
-	candles, expectedMA, err := loadCandlesFromFile("./test_dataset/BINANCE_ETHUSD_60.csv")
+	candles, expectedMA, _, _, _, err := loadCandlesFromFile("./test_dataset/BINANCE_ETHUSD_60.csv")
 	assert.Nil(t, err)
 
 	ma, err := MovingAverage(candles, length)
@@ -28,22 +28,24 @@ func TestMovingAverage(t *testing.T) {
 	for k := range expectedMA[length-1:] {
 		assert.LessOrEqual(t, math.Abs(float64(expectedMA[length-1+k]-ma[k])), 0.1)
 	}
-	ma, err = MovingAverage(candles[:length - 4], length)
+	ma, err = MovingAverage(candles[:length-4], length)
 	assert.NotNil(t, err)
 	assert.Nil(t, ma)
-
 }
 
-func loadCandlesFromFile(filepath string) ([]market.Candle, []float32, error) {
+func loadCandlesFromFile(filepath string) ([]market.Candle, []float32, []float32, []float32, []float32, error) {
 	const op = "loadCandlesFromFile"
 
 	var candles []market.Candle
 	var movingAverage []float32
+	var volumeWAP []float32
+	var volume []float32
+	var RSI []float32
 
 	// Load a candle dataset example
 	f, err := os.Open(filepath)
 	if err != nil {
-		return nil, nil, ez.Wrap(op, err)
+		return nil, nil, nil, nil, nil, ez.Wrap(op, err)
 	}
 
 	scanner := bufio.NewScanner(f)
@@ -59,30 +61,48 @@ func loadCandlesFromFile(filepath string) ([]market.Candle, []float32, error) {
 		// Convert from string to datatypes
 		time, err := strconv.ParseInt(lineArr[0], 10, 32)
 		if err != nil {
-			return nil, nil, ez.Wrap(op, err)
+			return nil, nil, nil, nil, nil, ez.Wrap(op, err)
 		}
 
 		o, err := strconv.ParseFloat(lineArr[1], 64)
 		if err != nil {
-			return nil, nil, ez.Wrap(op, err)
+			return nil, nil, nil, nil, nil, ez.Wrap(op, err)
 		}
 
 		h, err := strconv.ParseFloat(lineArr[2], 64)
 		if err != nil {
-			return nil, nil, ez.Wrap(op, err)
+			return nil, nil, nil, nil, nil, ez.Wrap(op, err)
 		}
 
 		l, err := strconv.ParseFloat(lineArr[3], 64)
 		if err != nil {
-			return nil, nil, ez.Wrap(op, err)
+			return nil, nil, nil, nil, nil, ez.Wrap(op, err)
 		}
 
 		c, err := strconv.ParseFloat(lineArr[4], 64)
 		if err != nil {
-			return nil, nil, ez.Wrap(op, err)
+			return nil, nil, nil, nil, nil, ez.Wrap(op, err)
 		}
 
 		ma, err := strconv.ParseFloat(lineArr[5], 64)
+		if err != nil {
+			return nil, nil, nil, nil, nil, ez.Wrap(op, err)
+		}
+
+		vwap, err := strconv.ParseFloat(lineArr[6], 64)
+		if err != nil {
+			return nil, nil, nil, nil, nil, ez.Wrap(op, err)
+		}
+
+		vol, err := strconv.ParseFloat(lineArr[7], 64)
+		if err != nil {
+			return nil, nil, nil, nil, nil, ez.Wrap(op, err)
+		}
+
+		rsi, err := strconv.ParseFloat(lineArr[8], 64)
+		if err != nil {
+			return nil, nil, nil, nil, nil, ez.Wrap(op, err)
+		}
 
 		candle := market.Candle{
 			Time:  time,
@@ -94,7 +114,10 @@ func loadCandlesFromFile(filepath string) ([]market.Candle, []float32, error) {
 
 		candles = append(candles, candle)
 		movingAverage = append(movingAverage, float32(ma))
+		volumeWAP = append(volumeWAP, float32(vwap))
+		volume = append(volume, float32(vol))
+		RSI = append(RSI, float32(rsi))
 	}
 
-	return candles, movingAverage, nil
+	return candles, movingAverage, volumeWAP, volume, RSI, nil
 }
