@@ -25,5 +25,6 @@ type Actions struct {
 type Strategy interface {
 	GetName() string
 	GetVersion() string
+	PreloadTick(tick *Tick) error
 	Tick(tick *Tick) (*Actions, error)
 }
