@@ -11,7 +11,7 @@ import (
 // Trade represents a market trade
 type Trade struct {
 	ID            string     `json:"id"`
-	ExecutionDate time.Time  `json:"execution_date"`
+	ExecutionTime time.Time  `json:"execution_time"`
 	Action        ActionType `json:"action"`
 	OrderType     OrderType  `json:"order_type"`
 	Pair          *Pair      `json:"pair"`
@@ -19,11 +19,11 @@ type Trade struct {
 	Quantity      float64    `json:"quantity"`
 	Fee           float64    `json:"fee"`
 	Cost          float64    `json:"cost"`
-	Tag           string     `json:"tag"`
+	ExecutionID   string     `json:"execution_id"`
 }
 
 // NewTrade creates a new trade
-func NewTrade(id string, executionDate time.Time, actionType ActionType, orderType OrderType, pair *Pair, price, quantity, cost float64) *Trade {
+func NewTrade(id string, executionTime time.Time, actionType ActionType, orderType OrderType, pair *Pair, price, quantity, cost float64) *Trade {
 
 	var fee float64
 
@@ -35,7 +35,7 @@ func NewTrade(id string, executionDate time.Time, actionType ActionType, orderTy
 
 	trade := &Trade{
 		ID:            id,
-		ExecutionDate: executionDate,
+		ExecutionTime: executionTime,
 		Action:        actionType,
 		OrderType:     orderType,
 		Pair:          pair,
@@ -73,5 +73,5 @@ func (t *Trade) Update(i interface{}) error {
 }
 
 func (t *Trade) String() string {
-	return fmt.Sprintf("ID: %s Date: %s Action: %s Type: %s Pair: %s Price: $%.2f Quantity: %.4f Fee: $%.2f Cost: $%.2f", t.ID, t.ExecutionDate, t.Action, t.OrderType, t.Pair, t.Price, t.Quantity, t.Fee, t.Cost)
+	return fmt.Sprintf("ID: %s ExecutionTime: %s Action: %s Type: %s Pair: %s Price: $%.2f Quantity: %.4f Fee: $%.2f Cost: $%.2f", t.ID, t.ExecutionTime, t.Action, t.OrderType, t.Pair, t.Price, t.Quantity, t.Fee, t.Cost)
 }

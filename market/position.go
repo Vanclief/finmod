@@ -30,10 +30,10 @@ type Position struct {
 	Quantity         float64      `json:"quantity"`
 	Profit           float64      `json:"profit"`
 	ProfitPercentage float64      `json:"profit_percentage"`
-	OpenDate         time.Time    `json:"open_date"`
-	CloseDate        time.Time    `json:"close_date"`
+	OpenTime         time.Time    `json:"open_time"`
+	CloseTime        time.Time    `json:"close_time"`
 	Trades           []string     `json:"trades"`
-	Tag              string       `json:"tag"`
+	ExecutionID      string       `json:"execution_id"`
 	Data             string       `json:"data"`
 }
 
@@ -54,7 +54,7 @@ func NewPosition(trade *Trade) *Position {
 		OpenPrice: trade.Price,
 		Quantity:  trade.Quantity,
 		Open:      true,
-		OpenDate:  trade.ExecutionDate,
+		OpenTime:  trade.ExecutionTime,
 		Trades:    []string{trade.ID},
 	}
 
@@ -86,7 +86,7 @@ func (p *Position) Update(i interface{}) error {
 }
 
 func (p *Position) String() string {
-	return fmt.Sprintf("ID: %s Type: %s Pair: %s Open: %t OpenPrice: %.2f ClosePrice: %.2f Quantity: %.4f Profit: %.2f OpenDate: %s CloseDate: %s # Trades: %d", p.ID[0:8], p.Type, p.Pair.String(), p.Open, p.OpenPrice, p.ClosePrice, p.Quantity, p.Profit, p.OpenDate, p.CloseDate, len(p.Trades))
+	return fmt.Sprintf("ID: %s Type: %s Pair: %s Open: %t OpenPrice: %.2f ClosePrice: %.2f Quantity: %.4f Profit: %.2f OpenTime: %s CloseTime: %s # Trades: %d", p.ID[0:8], p.Type, p.Pair.String(), p.Open, p.OpenPrice, p.ClosePrice, p.Quantity, p.Profit, p.OpenTime, p.CloseTime, len(p.Trades))
 }
 
 // Modify receives a new trade that updates the position
@@ -140,7 +140,7 @@ func (p *Position) substract(trade *Trade) error {
 		}
 
 		p.Open = false
-		p.CloseDate = trade.ExecutionDate
+		p.CloseTime = trade.ExecutionTime
 
 	} else {
 		// Update the trade

@@ -16,7 +16,7 @@ func TestNewTrade(t *testing.T) {
 	// Should be able to create a new trade
 	trade := NewTrade("TO2WZX", time.Now(), BuyAction, MarketOrder, pair, 14.39, 10.4233, 150)
 	assert.Equal(t, "TO2WZX", trade.ID)
-	assert.NotNil(t, trade.ExecutionDate)
+	assert.NotNil(t, trade.ExecutionTime)
 	assert.Equal(t, BuyAction, trade.Action)
 	assert.Equal(t, MarketOrder, trade.OrderType)
 	assert.Equal(t, pair, trade.Pair)

@@ -12,7 +12,7 @@ type Annotation struct {
 	Time         int64   `json:"time"`
 	CreationTime int64   `json:"creation_time"`
 	Price        float64 `json:"price"`
-	Tag          string  `json:"tag"`
+	ExecutionID  string  `json:"execution_id"`
 	Label        string  `json:"label"`
 	Tooltip      string  `json:"tooltip"`
 }
