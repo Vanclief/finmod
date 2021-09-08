@@ -6,6 +6,10 @@ import (
 	"github.com/vanclief/state/interfaces"
 )
 
+type AddAnnotationsAction struct {
+	Annotations []Annotation
+}
+
 // Annotation - A note of explanation or comment added to the graph
 type Annotation struct {
 	ID           string  `json:"id"`
