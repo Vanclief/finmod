@@ -10,6 +10,7 @@ type CreatePositionAction struct {
 	Symbol     string            `json:"symbol"`
 	ActionType market.ActionType `json:"action_type"`
 	OrderType  market.OrderType  `json:"order_type"`
+	Price      float64           `json:"price"`
 	Volume     float64           `json:"volume"`
 	StopLoss   float64           `json:"stop_loss"`
 	TakeProfit float64           `json:"take_profit"`
