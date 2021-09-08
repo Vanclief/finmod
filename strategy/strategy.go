@@ -8,7 +8,6 @@ type Tick struct {
 	PendingActions  *Actions
 	OpenPositions   []market.Position // Current Open Positions
 	ClosedPositions []market.Position // Recently Closed Positions
-	Assets          float64
 	Capital         float64
 }
 
