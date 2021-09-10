@@ -10,7 +10,7 @@ type Actions struct {
 }
 
 func (a *Actions) AddCreatePositions(actions ...CreatePositionAction) {
-	if a == nil || a.CreatePositions == nil {
+	if a.CreatePositions == nil {
 		a.CreatePositions = map[string]CreatePositionAction{}
 	}
 
