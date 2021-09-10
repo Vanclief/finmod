@@ -1,5 +1,7 @@
 package strategy
 
+import "fmt"
+
 // Actions - The available actions that can be executed by the strategy
 type Actions struct {
 	CreatePositions map[string]CreatePositionAction
@@ -10,6 +12,7 @@ type Actions struct {
 }
 
 func (a *Actions) AddCreatePositions(actions ...CreatePositionAction) {
+	fmt.Println("a", a)
 	if a.CreatePositions == nil {
 		a.CreatePositions = map[string]CreatePositionAction{}
 	}
