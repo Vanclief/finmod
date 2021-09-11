@@ -21,8 +21,8 @@ const (
 
 // PositionCloseOrder - A TakeProfit or StopLoss order to close the position
 type PositionCloseOrder struct {
-	Price   string `json:"price"`
-	OrderID string `json:"order_id"`
+	Price   float64 `json:"price"`
+	OrderID string  `json:"order_id"`
 }
 
 // Position represents a market position
