@@ -21,7 +21,7 @@ func TestOrderRequestCalculateFields(t *testing.T) {
 
 	baseAsset, _ := NewCryptoAsset("ETH")
 	quoteAsset, _ := NewForexAsset("USD")
-	pair, _ := NewPair(baseAsset, quoteAsset)
+	pair := NewPair(baseAsset, quoteAsset)
 
 	or, err := NewOrderRequest(pair, BuyAction, LimitOrder, 5, 2000, 0)
 	assert.Nil(t, err)

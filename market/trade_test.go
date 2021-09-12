@@ -11,7 +11,7 @@ func TestNewTrade(t *testing.T) {
 
 	baseAsset, _ := NewCryptoAsset("FLOW")
 	quoteAsset, _ := NewForexAsset("USD")
-	pair, _ := NewPair(baseAsset, quoteAsset)
+	pair := NewPair(baseAsset, quoteAsset)
 
 	// Should be able to create a new trade
 	trade := NewTrade("TO2WZX", time.Now(), BuyAction, MarketOrder, pair, 14.39, 10.4233, 150)

@@ -11,7 +11,7 @@ func TestNewPosition(t *testing.T) {
 
 	baseAsset, _ := NewCryptoAsset("ETH")
 	quoteAsset, _ := NewForexAsset("USD")
-	pair, _ := NewPair(baseAsset, quoteAsset)
+	pair := NewPair(baseAsset, quoteAsset)
 
 	// Should be able to create a new long position from a trade
 	trade := NewTrade("TO2WZX", time.Now(), BuyAction, MarketOrder, pair, 14.39, 10.4233, 150)
@@ -44,7 +44,7 @@ func TestModifyPosition(t *testing.T) {
 
 	baseAsset, _ := NewCryptoAsset("ETH")
 	quoteAsset, _ := NewForexAsset("USD")
-	pair, _ := NewPair(baseAsset, quoteAsset)
+	pair := NewPair(baseAsset, quoteAsset)
 
 	// Case 1: Should be able to modify a long position with a new long trade that increments the position size
 	trade1 := NewTrade("TO2WZX", time.Now(), BuyAction, MarketOrder, pair, 14.39, 10.4233, 150)
