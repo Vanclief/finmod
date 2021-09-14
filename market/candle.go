@@ -21,10 +21,10 @@ type Candle struct {
 }
 
 func (p *Candle) String() string {
-	time := time.Unix(p.Time, 0)
+	unixTime := time.Unix(p.Time, 0)
 	return fmt.Sprintf(
 		"Time: %s | Open: %.4f | High: %.4f | Low: %.4f | Close: %.4f | Volume: %.4f",
-		time,
+		unixTime,
 		p.Open,
 		p.High,
 		p.Low,
@@ -37,6 +37,14 @@ func (p *Candle) String() string {
 // candles with the market data resampled to fit the new interval
 func ModifyInterval(candles []Candle, minutes int) ([]Candle, error) {
 	op := "market.ModifyInterval"
+
+	diffInMinutes := (candles[1].Time - candles[0].Time) / 60
+	if diffInMinutes != 1 && minutes == 1 {
+		return nil, ez.New(op, ez.ECONFLICT, "No 1 minute interval exists", nil)
+	}
+	if int64(minutes) % diffInMinutes != 0 {
+		return nil, ez.New(op, ez.ECONFLICT, "The retrieved candles cannot be modified to the requested timeframe", nil)
+	}
 
 	var newCandles []Candle
 	modMinutes := minutes
