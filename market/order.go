@@ -107,3 +107,10 @@ func (o *Order) String() string {
 		o.CloseTime,
 	)
 }
+
+func (o *Order) IsOpen() bool {
+	if o.Status == FulfilledOrder || o.Status == CanceledOrder {
+		return false
+	}
+	return true
+}
