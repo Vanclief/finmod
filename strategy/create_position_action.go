@@ -15,6 +15,7 @@ type CreatePositionAction struct {
 	StopLoss   float64           `json:"stop_loss"`
 	TakeProfit float64           `json:"take_profit"`
 	Slippage   float64           `json:"slippage"`
+	OrderID    string            `json:"order_id"`
 }
 
 func (action *CreatePositionAction) GenerateID() {
