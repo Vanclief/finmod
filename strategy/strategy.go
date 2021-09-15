@@ -6,8 +6,9 @@ import "github.com/vanclief/finmod/market"
 type Tick struct {
 	Candle          *market.Candle
 	PendingActions  *Actions
-	OpenPositions   map[string]market.Position // Current Open Positions
-	ClosedPositions map[string]market.Position // Recently Closed Positions
+	OpenOrders      map[string]market.Order
+	OpenPositions   map[string]market.Position
+	ClosedPositions map[string]market.Position
 	Capital         float64
 }
 
