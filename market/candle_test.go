@@ -95,7 +95,7 @@ func loadCandlesFromFile(filepath string) ([]Candle, error) {
 	return candles, nil
 }
 
-func TestChangeGranularity(t *testing.T) {
+func TestModifyInterval(t *testing.T) {
 
 	// Load the test candles
 	candles1Min, err := loadCandlesFromFile("test_dataset/candles_1_min")
@@ -124,4 +124,15 @@ func TestChangeGranularity(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, candles)
 	assert.Equal(t, candles1H, candles)
+
+	// What happens if we only have 1 candle
+	candles, err = ModifyInterval(candles1Min[0:1], 1)
+	assert.Nil(t, err)
+	assert.NotNil(t, candles)
+
+	// What happens if we only have 2 candles
+	candles, err = ModifyInterval(candles1Min[0:2], 2)
+	assert.Nil(t, err)
+	assert.NotNil(t, candles)
+	assert.Len(t, candles, 1)
 }

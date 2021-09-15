@@ -38,11 +38,15 @@ func (p *Candle) String() string {
 func ModifyInterval(candles []Candle, minutes int) ([]Candle, error) {
 	op := "market.ModifyInterval"
 
+	if len(candles) == 1 {
+		return candles, nil
+	}
+
 	diffInMinutes := (candles[1].Time - candles[0].Time) / 60
 	if diffInMinutes != 1 && minutes == 1 {
 		return nil, ez.New(op, ez.ECONFLICT, "No 1 minute interval exists", nil)
 	}
-	if int64(minutes) % diffInMinutes != 0 {
+	if int64(minutes)%diffInMinutes != 0 {
 		return nil, ez.New(op, ez.ECONFLICT, "The retrieved candles cannot be modified to the requested timeframe", nil)
 	}
 
