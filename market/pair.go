@@ -22,10 +22,10 @@ func (p *Pair) String() string {
 }
 
 // Symbol - Gets the current symbol
-func (p *Pair) Symbol() string {
+func (p *Pair) Symbol(separator string) string {
 	if p.AltSymbol != "" {
 		return p.AltSymbol
 	} else {
-		return p.String()
+		return fmt.Sprintf("%s%s%s", p.Base.Symbol, separator, p.Quote.Symbol)
 	}
 }
