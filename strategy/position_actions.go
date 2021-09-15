@@ -19,3 +19,12 @@ type UpdatePositionAction struct {
 func (action *UpdatePositionAction) GenerateID() {
 	action.ID = xid.New().String()
 }
+
+type ClosePositionAction struct {
+	ID         string `json:"id"`
+	PositionID string `json:"position_id"`
+}
+
+func (action *ClosePositionAction) GenerateID() {
+	action.ID = xid.New().String()
+}

@@ -2,21 +2,44 @@ package strategy
 
 // Actions - The available actions that can be executed by the strategy
 type Actions struct {
-	CreatePositions map[string]CreatePositionAction
+	CreateOrders    map[string]CreateOrderAction
+	UpdateOrders    map[string]UpdateOrderAction
+	CancelOrders    map[string]CancelOrderAction
 	UpdatePositions map[string]UpdatePositionAction
 	ClosePositions  map[string]ClosePositionAction
-	CancelActions   []CancelAction
 	Annotations     []Annotation
 }
 
-func (a *Actions) AddCreatePositions(actions ...CreatePositionAction) {
-	if a.CreatePositions == nil {
-		a.CreatePositions = map[string]CreatePositionAction{}
+func (a *Actions) AddCreateOrders(actions ...CreateOrderAction) {
+	if a.CreateOrders == nil {
+		a.CreateOrders = map[string]CreateOrderAction{}
 	}
 
 	for _, action := range actions {
 		action.GenerateID()
-		a.CreatePositions[action.ID] = action
+		a.CreateOrders[action.ID] = action
+	}
+}
+
+func (a *Actions) AddUpdateOrders(actions ...UpdateOrderAction) {
+	if a.UpdateOrders == nil {
+		a.UpdateOrders = map[string]UpdateOrderAction{}
+	}
+
+	for _, action := range actions {
+		action.GenerateID()
+		a.UpdateOrders[action.ID] = action
+	}
+}
+
+func (a *Actions) AddCancelOrders(actions ...CancelOrderAction) {
+	if a.CancelOrders == nil {
+		a.CancelOrders = map[string]CancelOrderAction{}
+	}
+
+	for _, action := range actions {
+		action.GenerateID()
+		a.CancelOrders[action.ID] = action
 	}
 }
 
@@ -40,10 +63,6 @@ func (a *Actions) AddClosePositions(actions ...ClosePositionAction) {
 		action.GenerateID()
 		a.ClosePositions[action.ID] = action
 	}
-}
-
-func (a *Actions) AddCancelActions(actions ...CancelAction) {
-	a.CancelActions = append(a.CancelActions, actions...)
 }
 
 func (a *Actions) AddAnnotations(action ...Annotation) {
