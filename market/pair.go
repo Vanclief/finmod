@@ -8,7 +8,7 @@ import (
 type Pair struct {
 	Base      *Asset `json:"base"`
 	Quote     *Asset `json:"quote"`
-	AltSymbol string `json:"-"` // For internal usage
+	AltSymbol string `json:"alt_symbol"`
 }
 
 // NewPair creates a new Pair from two assets
