@@ -27,22 +27,21 @@ type PositionCloseOrder struct {
 
 // Position represents a market position
 type Position struct {
-	ID               string             `json:"id"`
-	Type             PositionType       `json:"type"`
-	Pair             *Pair              `json:"pair"`
-	Open             bool               `json:"open"`
-	TakeProfit       PositionCloseOrder `json:"take_profit"`
-	StopLoss         PositionCloseOrder `json:"stop_loss"`
-	OpenPrice        float64            `json:"open_price"`
-	ClosePrice       float64            `json:"close_price"`
-	Quantity         float64            `json:"quantity"`
-	Profit           float64            `json:"profit"`
-	ProfitPercentage float64            `json:"profit_percentage"`
-	OpenTime         time.Time          `json:"open_time"`
-	CloseTime        time.Time          `json:"close_time"`
-	Trades           []string           `json:"trades"`
-	ExecutionID      string             `json:"execution_id"`
-	Data             string             `json:"data"`
+	ID          string             `json:"id"`
+	Type        PositionType       `json:"type"`
+	Pair        *Pair              `json:"pair"`
+	Open        bool               `json:"open"`
+	TakeProfit  PositionCloseOrder `json:"take_profit"`
+	StopLoss    PositionCloseOrder `json:"stop_loss"`
+	OpenPrice   float64            `json:"open_price"`
+	ClosePrice  float64            `json:"close_price"`
+	Quantity    float64            `json:"quantity"`
+	Profit      float64            `json:"profit"`
+	OpenTime    time.Time          `json:"open_time"`
+	CloseTime   time.Time          `json:"close_time"`
+	Trades      []string           `json:"trades"`
+	ExecutionID string             `json:"execution_id"`
+	Data        string             `json:"data"`
 }
 
 // NewPosition creates a new Position
