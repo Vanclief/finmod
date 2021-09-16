@@ -97,6 +97,15 @@ func (p *Position) String() string {
 	return fmt.Sprintf("ID: %s Type: %s Pair: %s Open: %t OpenPrice: %.2f ClosePrice: %.2f Quantity: %.4f Profit: %.2f OpenTime: %s CloseTime: %s # Trades: %d", p.ID[0:8], p.Type, p.Pair.String(), p.Open, p.OpenPrice, p.ClosePrice, p.Quantity, p.Profit, p.OpenTime, p.CloseTime, len(p.Trades))
 }
 
+// UnrealizedProfit - Returns the current unrealized profit of the position
+func (p *Position) UnrealizedProfit(currentPrice float64) float64 {
+	if p.Type == LongPosition {
+		return (currentPrice - p.OpenPrice) * p.Quantity
+	} else {
+		return (p.OpenPrice - currentPrice) * p.Quantity
+	}
+}
+
 // Modify receives a new trade that updates the position
 func (p *Position) Modify(trade *Trade) error {
 	const op = "position.Modify"
