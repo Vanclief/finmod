@@ -47,7 +47,7 @@ func ModifyInterval(candles []Candle, minutes int) ([]Candle, error) {
 		return nil, ez.New(op, ez.ECONFLICT, "No 1 minute interval exists", nil)
 	}
 	if int64(minutes)%diffInMinutes != 0 {
-		return nil, ez.New(op, ez.ECONFLICT, fmt.Sprintf(`The retrieved candles cannot be modified to the requested timeframe, if condition: %d %% %d`, minutes, diffInMinutes), nil)
+		return nil, ez.New(op, ez.ECONFLICT, fmt.Sprintf(`The retrieved candles cannot be modified to the %d minutes timeframe, the delta between candles is %d minutes`, minutes, diffInMinutes), nil)
 	}
 
 	var newCandles []Candle

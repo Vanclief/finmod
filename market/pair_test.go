@@ -12,8 +12,9 @@ func TestPairSymbol(t *testing.T) {
 	quote := &Asset{Symbol: "USD"}
 
 	pair := &Pair{Base: base, Quote: quote}
-	pairAlt := &Pair{}
-	pairAlt.AltSymbol = "#US30"
+
+	baseAlt := &Asset{Symbol: "#US30"}
+	pairAlt := &Pair{Base: baseAlt}
 
 	assert.Equal(t, "ETHUSD", pair.Symbol(""))
 	assert.Equal(t, "ETH/USD", pair.Symbol("/"))
