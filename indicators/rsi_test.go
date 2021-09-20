@@ -2,12 +2,13 @@ package indicators
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestRSI(t *testing.T) {
-	candles, _, _, _, _, err := loadCandlesFromFile("./test_dataset/BINANCE_BTCUSDT,_60.csv")
+	candles, _, _, _, _, err := loadCandlesFromFile("./test_dataset/BINANCE_BTCUSDT_60.csv")
 	assert.Nil(t, err)
 
 	calculatedRSI, err := RSI(candles, 14)
