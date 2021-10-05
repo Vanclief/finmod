@@ -24,6 +24,9 @@ type OrderType string
 const (
 	// MarketOrder will buy or sell at whatever the current price is
 	MarketOrder OrderType = "market"
+	// ClosePosition will buy or sell at whatever the current price to close a position
+	ClosePosition OrderType = "close_position"
+
 	// LimitOrder will buy or sell at a specific price
 	LimitOrder OrderType = "limit"
 	// TakeProfit will buy or sell at a specific price
