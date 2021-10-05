@@ -22,10 +22,14 @@ const (
 type OrderType string
 
 const (
-	// MarketOrder will attempt to buy or sell at whatever the current price is
+	// MarketOrder will buy or sell at whatever the current price is
 	MarketOrder OrderType = "market"
-	// LimitOrder will attempt to buy or sell at a specific price
+	// LimitOrder will buy or sell at a specific price
 	LimitOrder OrderType = "limit"
+	// TakeProfit will buy or sell at a specific price
+	TakeProfit OrderType = "take_profit"
+	// StopLoss will buy or sell at a specific price
+	StopLoss OrderType = "stop_loss"
 )
 
 // OrderStatus - determines the status of the order
