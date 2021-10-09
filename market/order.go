@@ -64,6 +64,7 @@ type Order struct {
 	OpenTime       time.Time   `json:"open_time"`
 	CloseTime      time.Time   `json:"close_time"`
 	Trades         []string    `json:"trades"`
+	PositionID     string      `json:"position_id"`
 	ExecutionID    string      `json:"execution_id"`
 }
 
