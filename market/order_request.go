@@ -8,12 +8,13 @@ import (
 
 // OrderRequest - Request to create an order
 type OrderRequest struct {
-	Action   ActionType
-	Type     OrderType
-	Pair     *Pair
-	Price    float64
-	Quantity float64
-	Total    float64
+	Action     ActionType
+	Type       OrderType
+	Pair       *Pair
+	Price      float64
+	Quantity   float64
+	Total      float64
+	PositionID string
 }
 
 // NewOrderRequest - creates a valid new OrderRequest
