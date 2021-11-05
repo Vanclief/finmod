@@ -7,12 +7,11 @@ import (
 	"time"
 
 	"github.com/vanclief/ez"
-	"github.com/vanclief/finmod/market"
 )
 
 // WithinHours - Returns true or false depending if a Candle is within
 // the HH:MM time window with inclusive limits.
-func WithinHours(candle *market.Candle, start, end string) (bool, error) {
+func WithinHours(candleTime time.Time, start, end string) (bool, error) {
 	const op = "fragments.WithinHours"
 
 	// Split the strings
@@ -48,17 +47,14 @@ func WithinHours(candle *market.Candle, start, end string) (bool, error) {
 		ez.Wrap(op, err)
 	}
 
-	// Candle
-	cTime := time.Unix(candle.Time, 0)
-
 	// Condition
-	if startHour > cTime.Hour() || cTime.Hour() > endHour {
+	if startHour > candleTime.Hour() || candleTime.Hour() > endHour {
 		return false, nil
 	}
 
-	if startHour == cTime.Hour() && startMinutes > cTime.Minute() {
+	if startHour == candleTime.Hour() && startMinutes > candleTime.Minute() {
 		return false, nil
-	} else if endHour == cTime.Hour() && cTime.Minute() > endMinutes {
+	} else if endHour == candleTime.Hour() && candleTime.Minute() > endMinutes {
 		return false, nil
 	}
 
