@@ -71,4 +71,5 @@ func TestModifyInterval(t *testing.T) {
 	candles, err = ModifyInterval(candles1H, 120)
 	assert.Nil(t, err)
 	assert.NotNil(t, candles)
+
 }

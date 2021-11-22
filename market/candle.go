@@ -35,46 +35,41 @@ func (p *Candle) String() string {
 
 // ModifyInterval - takes an array of candles and the desired interval in minutes and returns an array of
 // candles with the market data resampled to fit the new interval
-func ModifyInterval(candles []Candle, minutes int) ([]Candle, error) {
+func ModifyInterval(candles []Candle, minuteInterval int) ([]Candle, error) {
 	op := "market.ModifyInterval"
 
+	// If we only have a candle, return the candle, there is nothing to do
 	if len(candles) == 1 {
 		return candles, nil
 	}
 
-	diffInMinutes := (candles[1].Time - candles[0].Time) / 60
-	if diffInMinutes != 1 && minutes == 1 {
+	// Check that if we are requesting a minute interval that there is actually
+	// a minute interval between the candles
+	minuteCandleDelta := (candles[1].Time - candles[0].Time) / 60
+	if minuteCandleDelta != 1 && minuteInterval == 1 {
 		return nil, ez.New(op, ez.ECONFLICT, "No 1 minute interval exists", nil)
 	}
-	if int64(minutes)%diffInMinutes != 0 {
-		return nil, ez.New(op, ez.ECONFLICT, fmt.Sprintf(`The retrieved candles cannot be modified to the %d minutes timeframe, the delta between candles is %d minutes`, minutes, diffInMinutes), nil)
+
+	if int64(minuteInterval)%minuteCandleDelta != 0 {
+		return nil, ez.New(op, ez.ECONFLICT, fmt.Sprintf(`The retrieved candles cannot be modified to the %d minutes timeframe, the delta between candles is %d minutes`, minuteInterval, minuteCandleDelta), nil)
 	}
 
-	var newCandles []Candle
-	modMinutes := minutes
-	if minutes > 60 {
-		modMinutes = minutes % 60
-	}
-
-	if modMinutes == 0 {
-		modMinutes = 60
-	}
-
-	start, err := findFirstIndex(candles, modMinutes)
+	start, err := findFirstIndex(candles, minuteInterval)
 	if err != nil {
 		return nil, ez.Wrap(op, err)
 	}
 
-	indexOfFirstCandle := start
+	var modifiedCandles []Candle
+	firstCandleIndex := start
 	pivot := candles[start].Time
-	for k, v := range candles[indexOfFirstCandle+1:] {
-		if (utils.Abs(v.Time-pivot)/60)%minutes == 0 {
-			compressedCandle, err := compressCandle(candles, start, k+indexOfFirstCandle+1)
+	for k, v := range candles[firstCandleIndex+1:] {
+		if (utils.Abs(v.Time-pivot)/60)%minuteInterval == 0 {
+			compressedCandle, err := compressCandle(candles, start, k+firstCandleIndex+1)
 			if err != nil {
 				return nil, err
 			}
-			newCandles = append(newCandles, compressedCandle)
-			start = k + indexOfFirstCandle + 1
+			modifiedCandles = append(modifiedCandles, compressedCandle)
+			start = k + firstCandleIndex + 1
 		}
 	}
 
@@ -84,9 +79,9 @@ func ModifyInterval(candles []Candle, minutes int) ([]Candle, error) {
 		return nil, err
 	}
 
-	newCandles = append(newCandles, compressedCandle)
+	modifiedCandles = append(modifiedCandles, compressedCandle)
 
-	return newCandles, nil
+	return modifiedCandles, nil
 }
 
 // GetMinInterval - Returns the minimun period interval in minutes from an array of
@@ -107,8 +102,18 @@ func GetMinInterval(candles []Candle) int {
 
 // findFirstIndex iterates over the candle array until it finds the first candle with a timestamp that is a
 // multiple of the desired interval in minutes, or is a 0 hour (e.g. 1:00:00, 20:00:00)
-func findFirstIndex(candles []Candle, modMinutes int) (int, error) {
+func findFirstIndex(candles []Candle, minuteInterval int) (int, error) {
 	op := "market.findFirstCandle"
+
+	// We get the mod of the first candle's timestamp and the desired interval
+	modMinutes := minuteInterval
+	if minuteInterval > 60 {
+		modMinutes = minuteInterval % 60
+	}
+	if modMinutes == 0 {
+		modMinutes = 60
+	}
+
 	i := 0
 	for {
 		if i == len(candles) {
@@ -122,6 +127,7 @@ func findFirstIndex(candles []Candle, modMinutes int) (int, error) {
 
 		i++
 	}
+
 	return i, nil
 }
 
@@ -129,6 +135,7 @@ func findFirstIndex(candles []Candle, modMinutes int) (int, error) {
 // the candle data in an accumulated form
 func compressCandle(candles []Candle, start, end int) (Candle, error) {
 	op := "candle.CompressCandle"
+
 	compressedCandle := Candle{
 		Time:   candles[start].Time,
 		Open:   candles[start].Open,
@@ -137,6 +144,7 @@ func compressCandle(candles []Candle, start, end int) (Candle, error) {
 		Close:  candles[end-1].Close,
 		Volume: 0,
 	}
+
 	high := -1e308
 	low := 1e308
 	accum := 0.0
