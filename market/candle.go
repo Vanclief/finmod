@@ -12,7 +12,7 @@ import (
 
 // Candle represents the high, low, open, and closing prices of an asset or security for a specific period
 type Candle struct {
-	Time   int64   `json:"id"`
+	Time   int64   `json:"time"`
 	Open   float64 `json:"open"`
 	High   float64 `json:"high"`
 	Low    float64 `json:"low"`
