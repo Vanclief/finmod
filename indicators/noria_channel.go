@@ -11,6 +11,10 @@ type Coordinate struct {
 	Y float64
 }
 
+func (c *Coordinate) Print() {
+	fmt.Printf("%f, %f\n", c.X, c.Y)
+}
+
 type Line struct {
 	candleStart int64
 	candleEnd   int64
@@ -31,38 +35,56 @@ func (t *Lines) Print() {
 	fmt.Printf("Lines:\nlowLine: %vhighLine: %v\n", t.lowLine.Print(), t.highLine.Print())
 }
 
-func FindMostHighCandle(candles []market.Candle) Coordinate {
-	var maxCandle market.Candle
-	var maxCandleIndex int
-	for i, candle := range candles {
-		if i == 0 {
-			maxCandle = candle
-			maxCandleIndex = i
-		} else if candle.High > maxCandle.High {
-			maxCandle = candle
-			maxCandleIndex = i
-		}
+func CandlesMidpoint(candles []market.Candle) (candleLowHighDifference []Coordinate) {
+	for i := 0; i < len(candles); i++ {
+		candleLowHighDifference = append(candleLowHighDifference, Coordinate{X: float64(i), Y: (candles[i].Low + candles[i].High) / 2})
 	}
-	return Coordinate{float64(maxCandleIndex), maxCandle.High}
+	return candleLowHighDifference
 }
 
-func FindMostLowCandle(candles []market.Candle) Coordinate {
-	var minCandle market.Candle
-	var minCandleIndex int
-	for i, candle := range candles {
-		if i == 0 {
-			minCandle = candle
-			minCandleIndex = i
-		} else if candle.Low < minCandle.Low {
-			minCandle = candle
-			minCandleIndex = i
+func ConvertCandlesToCoordinates(candles []market.Candle, lowHigh string) (candlesCoordinates []Coordinate) {
+	for i := 0; i < len(candles); i++ {
+		if lowHigh == "low" {
+			candlesCoordinates = append(candlesCoordinates, Coordinate{X: float64(i), Y: candles[i].Low})
+		} else {
+			candlesCoordinates = append(candlesCoordinates, Coordinate{X: float64(i), Y: candles[i].High})
 		}
 	}
-	return Coordinate{float64(minCandleIndex), minCandle.Low}
+	return candlesCoordinates
 }
 
-func LinearRegression(candles []market.Candle, startCandle, endCandle int64, minmax string) Line {
-	if len(candles) == 0 {
+func RotatePointsByMatrix(points []Coordinate, matrix [][]float64) (rotatedPoints []Coordinate) {
+	for i := 0; i < len(points); i++ {
+		rotatedPoints = append(rotatedPoints, Coordinate{
+			X: points[i].X*matrix[0][0] + points[i].Y*matrix[0][1],
+			Y: points[i].X*matrix[1][0] + points[i].Y*matrix[1][1],
+		})
+	}
+	return rotatedPoints
+}
+
+func FindMostHighCoordinate(points []Coordinate) (mostHighCoordinate Coordinate) {
+	mostHighCoordinate = Coordinate{X: math.Inf(-1), Y: math.Inf(-1)}
+	for i := 0; i < len(points); i++ {
+		if points[i].Y > mostHighCoordinate.Y {
+			mostHighCoordinate = points[i]
+		}
+	}
+	return mostHighCoordinate
+}
+
+func FindMostLowCoordinate(points []Coordinate) (mostLowCoordinate Coordinate) {
+	mostLowCoordinate = Coordinate{X: math.Inf(1), Y: math.Inf(1)}
+	for i := 0; i < len(points); i++ {
+		if points[i].Y < mostLowCoordinate.Y {
+			mostLowCoordinate = points[i]
+		}
+	}
+	return mostLowCoordinate
+}
+
+func LinearRegression(points []Coordinate, startCandle, endCandle int64) Line {
+	if len(points) == 0 {
 		return Line{
 			candleStart: 0,
 			candleEnd:   0,
@@ -70,42 +92,24 @@ func LinearRegression(candles []market.Candle, startCandle, endCandle int64, min
 			b:           0,
 		}
 	}
-	var points []float64
-	if minmax == "low" {
-		for i := 0; i < len(candles); i++ {
-			points = append(points, candles[i].Low)
-		}
-	} else {
-		for i := 0; i < len(candles); i++ {
-			points = append(points, candles[i].High)
-		}
-	}
-
-	lowestCandle := FindMostLowCandle(candles)
-	highestCandle := FindMostHighCandle(candles)
-	n := len(candles)
+	n := float64(len(points))
 	sumX := 0.0
 	sumY := 0.0
 	sumXY := 0.0
 	sumX2 := 0.0
 	sumY2 := 0.0
-	for i := 0; i < n; i++ {
-		point := points[i]
-		sumX += float64(i)
-		sumY += point
-		sumXY += float64(i) * point
-		sumX2 += float64(i) * float64(i)
-		sumY2 += point * point
+	for _, v := range points {
+		sumX += v.X
+		sumY += v.Y
+		sumXY += v.X * v.Y
+		sumX2 += math.Pow(v.X, 2)
+		sumY2 += math.Pow(v.Y, 2)
 	}
 	//fmt.Printf("n: %v, sumX: %v, sumY: %v, sumXY: %v, sumX2: %v, sumY2: %v\n", n, sumX, sumY, sumXY, sumX2, sumY2)
-	b := ((sumY * sumX2) - (sumX * sumXY)) / ((float64(n) * sumX2) - (sumX * sumX))
-	m := ((float64(n) * sumXY) - (sumX * sumY)) / ((float64(n) * sumX2) - (sumX * sumX))
-	if minmax == "low" {
-		b = lowestCandle.Y - lowestCandle.X*m
-	} else {
-		b = highestCandle.Y - highestCandle.X*m
-	}
-	fmt.Printf("m: %v, b: %v\n", m, b)
+	b := ((sumY * sumX2) - (sumX * sumXY)) / ((n * sumX2) - (sumX * sumX))
+	m := ((n * sumXY) - (sumX * sumY)) / ((n * sumX2) - (sumX * sumX))
+
+	//fmt.Printf("m: %v, b: %v\n", m, b)
 	return Line{
 		candleStart: startCandle,
 		candleEnd:   endCandle,
@@ -126,18 +130,45 @@ func NoriaChannel(candles []market.Candle, length int) (lines []Lines) {
 			},
 		}
 	}
-	lower := 0
-	upper := length
-	for upper < len(candles) {
-		subarray := candles[lower:upper]
-		lines = append(lines, Lines{
-			lowLine:  LinearRegression(subarray, subarray[0].Time, subarray[len(subarray)-1].Time, "low"),
-			highLine: LinearRegression(subarray, subarray[0].Time, subarray[len(subarray)-1].Time, "high"),
-		})
-		lower++
-		upper++
+
+	//RATIO := 2 / (1 + math.Sqrt(5))
+	RATIO := 0.95
+
+	// 1. Calculate the difference between High and Low for each candle
+	candleLowHighDifference := CandlesMidpoint(candles)
+	// 2. Calculate Linear Regression using the midpoint
+	midLine := LinearRegression(candleLowHighDifference, candles[0].Time, candles[len(candles)-1].Time)
+	angle := math.Atan(midLine.m)
+	rotationMatrix := [][]float64{
+		{math.Cos(angle), math.Sin(angle)},
+		{-math.Sin(angle), math.Cos(angle)},
 	}
-	return lines
+	// 3. Rotate the points by the angle
+	lowPointsToRotate := ConvertCandlesToCoordinates(candles, "low")
+	highPointsToRotate := ConvertCandlesToCoordinates(candles, "high")
+	rotatedLowPoints := RotatePointsByMatrix(lowPointsToRotate, rotationMatrix)
+	rotatedHighPoints := RotatePointsByMatrix(highPointsToRotate, rotationMatrix)
+	// 4. Offset points by RATIO percentage
+	lowCandlesOffset := FindMostLowCoordinate(rotatedLowPoints).Y + (1-RATIO)*(FindMostHighCoordinate(rotatedLowPoints).Y-FindMostLowCoordinate(rotatedLowPoints).Y)
+	highCandlesOffset := FindMostLowCoordinate(rotatedHighPoints).Y + RATIO*(FindMostHighCoordinate(rotatedHighPoints).Y-FindMostLowCoordinate(rotatedHighPoints).Y)
+	rotatedLowLine := Line{
+		candleStart: candles[0].Time,
+		candleEnd:   candles[len(candles)-1].Time,
+		m:           midLine.m,
+		b:           lowCandlesOffset / math.Sin(angle+math.Pi/2),
+	}
+	rotatedHighLine := Line{
+		candleStart: candles[0].Time,
+		candleEnd:   candles[len(candles)-1].Time,
+		m:           midLine.m,
+		b:           highCandlesOffset / math.Sin(angle+math.Pi/2),
+	}
+	return []Lines{
+		{
+			lowLine:  rotatedLowLine,
+			highLine: rotatedHighLine,
+		},
+	}
 }
 
 func FindProperty(input []Lines, ran int) (property [][]Lines) {
