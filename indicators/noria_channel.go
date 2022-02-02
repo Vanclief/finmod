@@ -42,6 +42,13 @@ func CandlesMidpoint(candles []market.Candle) (candleLowHighDifference []Coordin
 	return candleLowHighDifference
 }
 
+func AverageMidpoint(candleMidpoints []Coordinate) (average float64) {
+	for _, midpoint := range candleMidpoints {
+		average += midpoint.Y
+	}
+	return average / float64(len(candleMidpoints))
+}
+
 func ConvertCandlesToCoordinates(candles []market.Candle, lowHigh string) (candlesCoordinates []Coordinate) {
 	for i := 0; i < len(candles); i++ {
 		if lowHigh == "low" {
@@ -118,24 +125,77 @@ func LinearRegression(points []Coordinate, startCandle, endCandle int64) Line {
 	}
 }
 
-func NoriaChannel(candles []market.Candle, length int) (lines []Lines) {
-	if length <= 0 {
-		return
+func CandleFitsInChannel(candle market.Candle, lowLine, highLine Line, index int, volatility float64) bool {
+	//fmt.Println("candle: ", candle)
+	//fmt.Println("lowLine: ", lowLine)
+	//fmt.Println("highLine: ", highLine)
+	//fmt.Println("index: ", index)
+	//fmt.Println("volatility: ", volatility)
+	factor := 1.05
+	lowLineYValue := lowLine.m*float64(index) + lowLine.b
+	highLineYValue := highLine.m*float64(index) + highLine.b
+	if candle.High < lowLineYValue && lowLineYValue-candle.High > volatility*factor {
+		return false
+	} else if candle.Low > highLineYValue && candle.Low-highLineYValue > volatility*factor {
+		return false
 	}
-	if len(candles) < length || len(candles) == 0 || length == 0 {
-		return []Lines{
-			{
-				lowLine:  Line{},
-				highLine: Line{},
-			},
+	return true
+}
+
+func Iterator(candles []market.Candle) (lines []Lines) {
+	if len(candles) < 3 {
+		return lines
+	}
+	channel := NoriaChannel(candles[:2])
+	volatility := AverageMidpoint(CandlesMidpoint(candles[:2]))
+	i := 0
+	j := 2
+	for {
+		if j >= len(candles)-1 {
+			fmt.Println("j >= len(candles)-1", i, j)
+			lines = append(lines, Lines{
+				lowLine:  channel.lowLine,
+				highLine: channel.highLine,
+			})
+			break
+		}
+		// Check if test candle fits within existing channel, if it does, recalculate the channel to accommodate the new candle
+		// if it does not, break the channel and start a new one
+		testCandle := candles[j]
+		if CandleFitsInChannel(testCandle, channel.lowLine, channel.highLine, j, volatility) {
+			j++
+			channel = NoriaChannel(candles[i:j])
+			volatility = AverageMidpoint(CandlesMidpoint(candles[i:j]))
+		} else {
+			lines = append(lines, Lines{
+				lowLine:  channel.lowLine,
+				highLine: channel.highLine,
+			})
+			if len(candles)-j < 3 {
+				fmt.Println("len(candles)-j < 3")
+				break
+			}
+			i = j
+			j += 2
+			channel = NoriaChannel(candles[i : j+1])
+			volatility = AverageMidpoint(CandlesMidpoint(candles[i:j]))
 		}
 	}
+	return lines
+}
 
+func NoriaChannel(candles []market.Candle) (lines Lines) {
+	if len(candles) < 2 {
+		return
+	}
+
+	// Golden ratio
 	//RATIO := 2 / (1 + math.Sqrt(5))
 	RATIO := 0.95
 
 	// 1. Calculate the difference between High and Low for each candle
 	candleLowHighDifference := CandlesMidpoint(candles)
+	//volatility := AverageMidpoint(candleLowHighDifference)
 	// 2. Calculate Linear Regression using the midpoint
 	midLine := LinearRegression(candleLowHighDifference, candles[0].Time, candles[len(candles)-1].Time)
 	angle := math.Atan(midLine.m)
@@ -163,31 +223,29 @@ func NoriaChannel(candles []market.Candle, length int) (lines []Lines) {
 		m:           midLine.m,
 		b:           highCandlesOffset / math.Sin(angle+math.Pi/2),
 	}
-	return []Lines{
-		{
-			lowLine:  rotatedLowLine,
-			highLine: rotatedHighLine,
-		},
+	return Lines{
+		lowLine:  rotatedLowLine,
+		highLine: rotatedHighLine,
 	}
 }
 
-func FindProperty(input []Lines, ran int) (property [][]Lines) {
-	if len(input) == 0 {
-		return [][]Lines{}
-	}
-	if ran < 0 {
-		return [][]Lines{}
-	}
-	var mini []Lines
-	for i := 0; i < len(input); i++ {
-		if math.Abs(input[i].lowLine.m) < 1 && math.Abs(input[i].highLine.m) < 1 {
-			mini = append(mini, input[i])
-		} else {
-			if len(mini) > ran {
-				property = append(property, mini)
-				mini = []Lines{}
-			}
-		}
-	}
-	return property
-}
+//func FindProperty(input []Lines, ran int) (property [][]Lines) {
+//	if len(input) == 0 {
+//		return [][]Lines{}
+//	}
+//	if ran < 0 {
+//		return [][]Lines{}
+//	}
+//	var mini []Lines
+//	for i := 0; i < len(input); i++ {
+//		if math.Abs(input[i].lowLine.m) < 1 && math.Abs(input[i].highLine.m) < 1 {
+//			mini = append(mini, input[i])
+//		} else {
+//			if len(mini) > ran {
+//				property = append(property, mini)
+//				mini = []Lines{}
+//			}
+//		}
+//	}
+//	return property
+//}
