@@ -23,7 +23,11 @@ type Line struct {
 }
 
 func (l *Line) Print() string {
-	return fmt.Sprintf("start: %d, end: %d, slope: %f, intercept: %f\n", l.candleStart, l.candleEnd, l.m, l.b)
+	if l.b < 0 {
+		return fmt.Sprintf("%fx %f", l.m, l.b)
+	} else {
+		return fmt.Sprintf("%fx + %f", l.m, l.b)
+	}
 }
 
 type Lines struct {
@@ -32,7 +36,18 @@ type Lines struct {
 }
 
 func (t *Lines) Print() {
-	fmt.Printf("Lines:\nlowLine: %vhighLine: %v\n", t.lowLine.Print(), t.highLine.Print())
+	fmt.Printf("Lines:\nlowLine: %v\nhighLine: %v\n", t.lowLine.Print(), t.highLine.Print())
+}
+
+type ChannelSegment struct {
+	start    int
+	end      int
+	lowLine  Line
+	highLine Line
+}
+
+func (t *ChannelSegment) Print() {
+	fmt.Printf("ChannelSegment:\nstart: %d\nend: %d\nlowLine: %v\nhighLine: %v\n----------------\n", t.start, t.end, t.lowLine.Print(), t.highLine.Print())
 }
 
 func CandlesMidpoint(candles []market.Candle) (candleLowHighDifference []Coordinate) {
@@ -42,9 +57,9 @@ func CandlesMidpoint(candles []market.Candle) (candleLowHighDifference []Coordin
 	return candleLowHighDifference
 }
 
-func AverageMidpoint(candleMidpoints []Coordinate) (average float64) {
-	for _, midpoint := range candleMidpoints {
-		average += midpoint.Y
+func GetLowHighAvg(candleMidpoints []market.Candle) (average float64) {
+	for _, candle := range candleMidpoints {
+		average += candle.High - candle.Low
 	}
 	return average / float64(len(candleMidpoints))
 }
@@ -126,34 +141,36 @@ func LinearRegression(points []Coordinate, startCandle, endCandle int64) Line {
 }
 
 func CandleFitsInChannel(candle market.Candle, lowLine, highLine Line, index int, volatility float64) bool {
-	//fmt.Println("candle: ", candle)
-	//fmt.Println("lowLine: ", lowLine)
-	//fmt.Println("highLine: ", highLine)
+	//fmt.Println("candle: ", candle.String())
+	//fmt.Println("lowLine: ", lowLine.Print())
+	//fmt.Println("highLine: ", highLine.Print())
 	//fmt.Println("index: ", index)
 	//fmt.Println("volatility: ", volatility)
-	factor := 1.05
+	factor := 2.2
 	lowLineYValue := lowLine.m*float64(index) + lowLine.b
 	highLineYValue := highLine.m*float64(index) + highLine.b
-	if candle.High < lowLineYValue && lowLineYValue-candle.High > volatility*factor {
+	if candle.High > highLineYValue+volatility*factor {
 		return false
-	} else if candle.Low > highLineYValue && candle.Low-highLineYValue > volatility*factor {
+	} else if candle.Low < lowLineYValue-volatility*factor {
 		return false
 	}
 	return true
 }
 
-func Iterator(candles []market.Candle) (lines []Lines) {
+func Iterator(candles []market.Candle) (channels []ChannelSegment) {
 	if len(candles) < 3 {
-		return lines
+		return channels
 	}
-	channel := NoriaChannel(candles[:2])
-	volatility := AverageMidpoint(CandlesMidpoint(candles[:2]))
+
+	channel := NoriaChannel(candles[:2], 0.0)
+	volatility := GetLowHighAvg(candles[:2])
 	i := 0
 	j := 2
 	for {
 		if j >= len(candles)-1 {
-			fmt.Println("j >= len(candles)-1", i, j)
-			lines = append(lines, Lines{
+			channels = append(channels, ChannelSegment{
+				start:    i,
+				end:      j,
 				lowLine:  channel.lowLine,
 				highLine: channel.highLine,
 			})
@@ -164,27 +181,27 @@ func Iterator(candles []market.Candle) (lines []Lines) {
 		testCandle := candles[j]
 		if CandleFitsInChannel(testCandle, channel.lowLine, channel.highLine, j, volatility) {
 			j++
-			channel = NoriaChannel(candles[i:j])
-			volatility = AverageMidpoint(CandlesMidpoint(candles[i:j]))
 		} else {
-			lines = append(lines, Lines{
+			//fmt.Println("i, j: ", i, j)
+			channels = append(channels, ChannelSegment{
+				start:    i,
+				end:      j,
 				lowLine:  channel.lowLine,
 				highLine: channel.highLine,
 			})
 			if len(candles)-j < 3 {
-				fmt.Println("len(candles)-j < 3")
 				break
 			}
 			i = j
-			j += 2
-			channel = NoriaChannel(candles[i : j+1])
-			volatility = AverageMidpoint(CandlesMidpoint(candles[i:j]))
+			j += 3
 		}
+		channel = NoriaChannel(candles[i:j], float64(i))
+		volatility = GetLowHighAvg(candles[i:j])
 	}
-	return lines
+	return channels
 }
 
-func NoriaChannel(candles []market.Candle) (lines Lines) {
+func NoriaChannel(candles []market.Candle, offset float64) (lines Lines) {
 	if len(candles) < 2 {
 		return
 	}
@@ -195,7 +212,7 @@ func NoriaChannel(candles []market.Candle) (lines Lines) {
 
 	// 1. Calculate the difference between High and Low for each candle
 	candleLowHighDifference := CandlesMidpoint(candles)
-	//volatility := AverageMidpoint(candleLowHighDifference)
+	//volatility := GetLowHighAvg(candleLowHighDifference)
 	// 2. Calculate Linear Regression using the midpoint
 	midLine := LinearRegression(candleLowHighDifference, candles[0].Time, candles[len(candles)-1].Time)
 	angle := math.Atan(midLine.m)
@@ -215,13 +232,13 @@ func NoriaChannel(candles []market.Candle) (lines Lines) {
 		candleStart: candles[0].Time,
 		candleEnd:   candles[len(candles)-1].Time,
 		m:           midLine.m,
-		b:           lowCandlesOffset / math.Sin(angle+math.Pi/2),
+		b:           (lowCandlesOffset)/math.Sin(angle+math.Pi/2) - midLine.m*offset,
 	}
 	rotatedHighLine := Line{
 		candleStart: candles[0].Time,
 		candleEnd:   candles[len(candles)-1].Time,
 		m:           midLine.m,
-		b:           highCandlesOffset / math.Sin(angle+math.Pi/2),
+		b:           (highCandlesOffset)/math.Sin(angle+math.Pi/2) - midLine.m*offset,
 	}
 	return Lines{
 		lowLine:  rotatedLowLine,
