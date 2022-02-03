@@ -140,29 +140,28 @@ func LinearRegression(points []Coordinate, startCandle, endCandle int64) Line {
 	}
 }
 
-func CandleFitsInChannel(candle market.Candle, lowLine, highLine Line, index int, volatility float64) bool {
+func CandleFitsInChannel(candle market.Candle, lowLine, highLine Line, index int, volatility float64, fitToleranceFactor float64) bool {
 	//fmt.Println("candle: ", candle.String())
 	//fmt.Println("lowLine: ", lowLine.Print())
 	//fmt.Println("highLine: ", highLine.Print())
 	//fmt.Println("index: ", index)
 	//fmt.Println("volatility: ", volatility)
-	factor := 2.2
 	lowLineYValue := lowLine.m*float64(index) + lowLine.b
 	highLineYValue := highLine.m*float64(index) + highLine.b
-	if candle.High > highLineYValue+volatility*factor {
+	if candle.High > highLineYValue+volatility*fitToleranceFactor {
 		return false
-	} else if candle.Low < lowLineYValue-volatility*factor {
+	} else if candle.Low < lowLineYValue-volatility*fitToleranceFactor {
 		return false
 	}
 	return true
 }
 
-func Iterator(candles []market.Candle) (channels []ChannelSegment) {
+func Iterator(candles []market.Candle, fitInsidePercentage float64, testChannelFitsInChannelFactor float64) (channels []ChannelSegment) {
 	if len(candles) < 3 {
 		return channels
 	}
 
-	channel := NoriaChannel(candles[:2], 0.0)
+	channel := NoriaChannel(candles[:2], 0.0, fitInsidePercentage)
 	volatility := GetLowHighAvg(candles[:2])
 	i := 0
 	j := 2
@@ -179,7 +178,7 @@ func Iterator(candles []market.Candle) (channels []ChannelSegment) {
 		// Check if test candle fits within existing channel, if it does, recalculate the channel to accommodate the new candle
 		// if it does not, break the channel and start a new one
 		testCandle := candles[j]
-		if CandleFitsInChannel(testCandle, channel.lowLine, channel.highLine, j, volatility) {
+		if CandleFitsInChannel(testCandle, channel.lowLine, channel.highLine, j, volatility, testChannelFitsInChannelFactor) {
 			j++
 		} else {
 			//fmt.Println("i, j: ", i, j)
@@ -195,20 +194,16 @@ func Iterator(candles []market.Candle) (channels []ChannelSegment) {
 			i = j
 			j += 3
 		}
-		channel = NoriaChannel(candles[i:j], float64(i))
+		channel = NoriaChannel(candles[i:j], float64(i), fitInsidePercentage)
 		volatility = GetLowHighAvg(candles[i:j])
 	}
 	return channels
 }
 
-func NoriaChannel(candles []market.Candle, offset float64) (lines Lines) {
+func NoriaChannel(candles []market.Candle, offset float64, fitInsidePercentage float64) (lines Lines) {
 	if len(candles) < 2 {
 		return
 	}
-
-	// Golden ratio
-	//RATIO := 2 / (1 + math.Sqrt(5))
-	RATIO := 0.95
 
 	// 1. Calculate the difference between High and Low for each candle
 	candleLowHighDifference := CandlesMidpoint(candles)
@@ -226,8 +221,8 @@ func NoriaChannel(candles []market.Candle, offset float64) (lines Lines) {
 	rotatedLowPoints := RotatePointsByMatrix(lowPointsToRotate, rotationMatrix)
 	rotatedHighPoints := RotatePointsByMatrix(highPointsToRotate, rotationMatrix)
 	// 4. Offset points by RATIO percentage
-	lowCandlesOffset := FindMostLowCoordinate(rotatedLowPoints).Y + (1-RATIO)*(FindMostHighCoordinate(rotatedLowPoints).Y-FindMostLowCoordinate(rotatedLowPoints).Y)
-	highCandlesOffset := FindMostLowCoordinate(rotatedHighPoints).Y + RATIO*(FindMostHighCoordinate(rotatedHighPoints).Y-FindMostLowCoordinate(rotatedHighPoints).Y)
+	lowCandlesOffset := FindMostLowCoordinate(rotatedLowPoints).Y + (1-fitInsidePercentage)*(FindMostHighCoordinate(rotatedLowPoints).Y-FindMostLowCoordinate(rotatedLowPoints).Y)
+	highCandlesOffset := FindMostLowCoordinate(rotatedHighPoints).Y + fitInsidePercentage*(FindMostHighCoordinate(rotatedHighPoints).Y-FindMostLowCoordinate(rotatedHighPoints).Y)
 	rotatedLowLine := Line{
 		candleStart: candles[0].Time,
 		candleEnd:   candles[len(candles)-1].Time,
