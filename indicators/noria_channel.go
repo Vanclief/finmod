@@ -156,12 +156,12 @@ func CandleFitsInChannel(candle market.Candle, lowLine, highLine Line, index int
 	return true
 }
 
-func Iterator(candles []market.Candle, fitInsidePercentage float64, testChannelFitsInChannelFactor float64) (channels []ChannelSegment) {
+func Iterator(candles []market.Candle, percentageOfCandlesThatMustFitInsideChannel float64, testCandleFitsInChannelFactor float64) (channels []ChannelSegment) {
 	if len(candles) < 3 {
 		return channels
 	}
 
-	channel := NoriaChannel(candles[:2], 0.0, fitInsidePercentage)
+	channel := NoriaChannel(candles[:2], 0.0, percentageOfCandlesThatMustFitInsideChannel)
 	volatility := GetLowHighAvg(candles[:2])
 	i := 0
 	j := 2
@@ -178,7 +178,7 @@ func Iterator(candles []market.Candle, fitInsidePercentage float64, testChannelF
 		// Check if test candle fits within existing channel, if it does, recalculate the channel to accommodate the new candle
 		// if it does not, break the channel and start a new one
 		testCandle := candles[j]
-		if CandleFitsInChannel(testCandle, channel.lowLine, channel.highLine, j, volatility, testChannelFitsInChannelFactor) {
+		if CandleFitsInChannel(testCandle, channel.lowLine, channel.highLine, j, volatility, testCandleFitsInChannelFactor) {
 			j++
 		} else {
 			//fmt.Println("i, j: ", i, j)
@@ -194,13 +194,13 @@ func Iterator(candles []market.Candle, fitInsidePercentage float64, testChannelF
 			i = j
 			j += 3
 		}
-		channel = NoriaChannel(candles[i:j], float64(i), fitInsidePercentage)
+		channel = NoriaChannel(candles[i:j], float64(i), percentageOfCandlesThatMustFitInsideChannel)
 		volatility = GetLowHighAvg(candles[i:j])
 	}
 	return channels
 }
 
-func NoriaChannel(candles []market.Candle, offset float64, fitInsidePercentage float64) (lines Lines) {
+func NoriaChannel(candles []market.Candle, offset float64, percentageOfCandlesThatMustFitInsideChannel float64) (lines Lines) {
 	if len(candles) < 2 {
 		return
 	}
@@ -221,8 +221,8 @@ func NoriaChannel(candles []market.Candle, offset float64, fitInsidePercentage f
 	rotatedLowPoints := RotatePointsByMatrix(lowPointsToRotate, rotationMatrix)
 	rotatedHighPoints := RotatePointsByMatrix(highPointsToRotate, rotationMatrix)
 	// 4. Offset points by RATIO percentage
-	lowCandlesOffset := FindMostLowCoordinate(rotatedLowPoints).Y + (1-fitInsidePercentage)*(FindMostHighCoordinate(rotatedLowPoints).Y-FindMostLowCoordinate(rotatedLowPoints).Y)
-	highCandlesOffset := FindMostLowCoordinate(rotatedHighPoints).Y + fitInsidePercentage*(FindMostHighCoordinate(rotatedHighPoints).Y-FindMostLowCoordinate(rotatedHighPoints).Y)
+	lowCandlesOffset := FindMostLowCoordinate(rotatedLowPoints).Y + (1-percentageOfCandlesThatMustFitInsideChannel)*(FindMostHighCoordinate(rotatedLowPoints).Y-FindMostLowCoordinate(rotatedLowPoints).Y)
+	highCandlesOffset := FindMostLowCoordinate(rotatedHighPoints).Y + percentageOfCandlesThatMustFitInsideChannel*(FindMostHighCoordinate(rotatedHighPoints).Y-FindMostLowCoordinate(rotatedHighPoints).Y)
 	rotatedLowLine := Line{
 		candleStart: candles[0].Time,
 		candleEnd:   candles[len(candles)-1].Time,
