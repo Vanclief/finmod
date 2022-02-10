@@ -1,8 +1,9 @@
 package indicators
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNoriaChannel(t *testing.T) {
@@ -16,4 +17,5 @@ func TestNoriaChannel(t *testing.T) {
 	for _, v := range ans {
 		v.Print()
 	}
+	t.Fail()
 }
