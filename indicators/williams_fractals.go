@@ -2,6 +2,7 @@ package indicators
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/vanclief/ez"
 	"github.com/vanclief/finmod/market"
@@ -29,84 +30,87 @@ func (wf *WilliamFractal) String() string {
 
 func WilliamFractals(candles []market.Candle) (fractals []WilliamFractal) {
 
+	// We need at least 5 candles to find a fractal
 	if len(candles) < minCandles {
 		return fractals
 	}
 
-	i := 0
-	j := minCandles
-
-	for {
-		if j >= len(candles) {
-			break
-		}
-
-		candleSubset := candles[i:j]
-		foundFractal, err := findFractal(candleSubset)
-		if err == nil {
-			fractals = append(fractals, foundFractal)
-		}
-
-		i++
-		j++
+	for i := 0; i <= len(candles)-5; i++ {
+		// While we have enough candles to find a fractal
+		foundFractals := findFractals(candles, i)
+		fractals = append(fractals, foundFractals...)
 	}
 	return fractals
 }
 
-func findFractal(candles []market.Candle) (foundFractal WilliamFractal, err error) {
-	const op = "FindFractal"
+func findFractals(candles []market.Candle, start int) (foundFractals []WilliamFractal) {
 
-	if len(candles) < 5 {
-		return foundFractal, ez.New(op, ez.EINVALID, "Not enough candles to find a fractal", nil)
+	upFractal, err := findFractal(candles, start, FractalUp)
+	if err == nil {
+		foundFractals = append(foundFractals, upFractal)
 	}
 
-	if len(candles)%2 == 0 {
-		return foundFractal, ez.New(op, ez.EINVALID, "Must have odd number of candles", nil)
+	downFractal, err := findFractal(candles, start, FractalDown)
+	if err == nil {
+		foundFractals = append(foundFractals, downFractal)
 	}
 
-	middleCandle := candles[len(candles)/2]
+	sort.SliceStable(foundFractals, func(i, j int) bool {
+		return foundFractals[i].Time < foundFractals[j].Time
+	})
 
-	if candleIsHighest(candles, middleCandle) {
-		foundFractal.Time = middleCandle.Time
-		foundFractal.Price = middleCandle.High
+	return foundFractals
+}
+
+func findFractal(candles []market.Candle, start int, fType FractalType) (foundFractal WilliamFractal, err error) {
+	const op = "findFractal"
+
+	// Step 1) Create our posible fractal
+	thirdCandle := candles[start+2]
+	foundFractal.Time = thirdCandle.Time
+
+	if fType == FractalUp {
+		foundFractal.Price = thirdCandle.High
 		foundFractal.Type = FractalUp
-		foundFractal.FractalLength = len(candles)
-
-		return foundFractal, nil
-
-	} else if candleIsLowest(candles, middleCandle) {
-		foundFractal.Time = middleCandle.Time
-		foundFractal.Price = middleCandle.Low
+	} else {
+		foundFractal.Price = thirdCandle.Low
 		foundFractal.Type = FractalDown
-		foundFractal.FractalLength = len(candles)
-
-		return foundFractal, nil
 	}
 
-	return foundFractal, ez.New(op, ez.EINVALID, "No fractal found", nil)
-}
-
-func candleIsHighest(candles []market.Candle, middleCandle market.Candle) bool {
-	for _, candle := range candles {
-		if candle.Time == middleCandle.Time {
-			continue
+	// Step 2) Check that the candles of the left are lower than the third candle
+	for i := 0; i < 2; i++ {
+		if fType == FractalUp && candles[start+i].High >= thirdCandle.High {
+			return foundFractal, ez.New(op, ez.EINVALID, "[FractalUp] Third candle doesn't have two preceding lows", nil)
 		}
-		if candle.High > middleCandle.High {
-			return false
+
+		if fType == FractalDown && candles[start+i].Low >= thirdCandle.Low {
+			return foundFractal, ez.New(op, ez.EINVALID, "[FractalDown] Third candle doesn't have two preceding highs", nil)
 		}
 	}
-	return true
-}
 
-func candleIsLowest(candles []market.Candle, middleCandle market.Candle) bool {
-	for _, candle := range candles {
-		if candle.Time == middleCandle.Time {
-			continue
+	// Step 2) Check that there are two lower candles on the right
+	rightCandleCount := 0
+	i := start + 3
+	for {
+
+		if rightCandleCount == 2 {
+			return foundFractal, nil
 		}
 
-		if candle.Low < middleCandle.Low {
-			return false
+		if fType == FractalUp {
+			if candles[i].High > thirdCandle.High {
+				return foundFractal, ez.New(op, ez.EINVALID, "[FractalUp] No fractal, as new high found", nil)
+			} else if candles[i].High < thirdCandle.High {
+				rightCandleCount++
+			}
+		}
+
+		if fType == FractalDown {
+			if candles[i].Low > thirdCandle.Low {
+				return foundFractal, ez.New(op, ez.EINVALID, "[FractalDown] No fractal, as new low found", nil)
+			} else if candles[i].Low < thirdCandle.Low {
+				rightCandleCount++
+			}
 		}
 	}
-	return true
 }
