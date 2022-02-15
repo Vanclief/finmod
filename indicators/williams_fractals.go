@@ -112,5 +112,7 @@ func findFractal(candles []market.Candle, start int, fType FractalType) (foundFr
 				rightCandleCount++
 			}
 		}
+
+		i++
 	}
 }
