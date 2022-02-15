@@ -18,14 +18,13 @@ var (
 )
 
 type WilliamFractal struct {
-	Time          int64
-	Price         float64
-	Type          FractalType
-	FractalLength int // 5 para la de 5 candles, 6 para la de 6 y así
+	Time  int64
+	Price float64
+	Type  FractalType
 }
 
 func (wf *WilliamFractal) String() string {
-	return fmt.Sprintf("%d %f %v %d", wf.Time, wf.Price, wf.Type, wf.FractalLength)
+	return fmt.Sprintf("%d %f %v", wf.Time, wf.Price, wf.Type)
 }
 
 func WilliamFractals(candles []market.Candle) (fractals []WilliamFractal) {
