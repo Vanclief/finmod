@@ -98,7 +98,7 @@ func findFractal(candles []market.Candle, start int, fType FractalType) (foundFr
 		}
 
 		if fType == FractalUp {
-			if candles[i].High > thirdCandle.High {
+			if candles[i].High >= thirdCandle.High {
 				return foundFractal, ez.New(op, ez.EINVALID, "[FractalUp] No fractal, as new high found", nil)
 			} else if candles[i].High < thirdCandle.High {
 				rightCandleCount++
@@ -106,7 +106,7 @@ func findFractal(candles []market.Candle, start int, fType FractalType) (foundFr
 		}
 
 		if fType == FractalDown {
-			if candles[i].Low < thirdCandle.Low {
+			if candles[i].Low <= thirdCandle.Low {
 				return foundFractal, ez.New(op, ez.EINVALID, "[FractalDown] No fractal, as new low found", nil)
 			} else if candles[i].Low > thirdCandle.Low {
 				rightCandleCount++
