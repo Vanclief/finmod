@@ -28,8 +28,8 @@ func (wf *WilliamFractal) String() string {
 }
 
 func WilliamFractals(candles []market.Candle) (fractals []WilliamFractal) {
-
 	// We need at least 5 candles to find a fractal
+
 	if len(candles) < minCandles {
 		return fractals
 	}
@@ -82,15 +82,16 @@ func findFractal(candles []market.Candle, start int, fType FractalType) (foundFr
 			return foundFractal, ez.New(op, ez.EINVALID, "[FractalUp] Third candle doesn't have two preceding lows", nil)
 		}
 
-		if fType == FractalDown && candles[start+i].Low >= thirdCandle.Low {
+		if fType == FractalDown && candles[start+i].Low <= thirdCandle.Low {
 			return foundFractal, ez.New(op, ez.EINVALID, "[FractalDown] Third candle doesn't have two preceding highs", nil)
 		}
 	}
 
 	// Step 2) Check that there are two lower candles on the right
 	rightCandleCount := 0
-	i := start + 3
-	for {
+	for i := start + 3; i < len(candles)-1; i++ {
+
+		fmt.Println("RightCandleCount", rightCandleCount)
 
 		if rightCandleCount == 2 {
 			return foundFractal, nil
@@ -105,13 +106,14 @@ func findFractal(candles []market.Candle, start int, fType FractalType) (foundFr
 		}
 
 		if fType == FractalDown {
-			if candles[i].Low > thirdCandle.Low {
+			if candles[i].Low < thirdCandle.Low {
 				return foundFractal, ez.New(op, ez.EINVALID, "[FractalDown] No fractal, as new low found", nil)
-			} else if candles[i].Low < thirdCandle.Low {
+			} else if candles[i].Low > thirdCandle.Low {
 				rightCandleCount++
 			}
 		}
 
-		i++
 	}
+
+	return foundFractal, nil
 }
