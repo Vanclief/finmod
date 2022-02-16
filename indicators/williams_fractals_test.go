@@ -3,8 +3,10 @@ package indicators
 import (
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/vanclief/finmod/market"
 )
 
 func TestWilliamsFractal(t *testing.T) {
@@ -43,4 +45,19 @@ func TestWilliamsFractal(t *testing.T) {
 			fmt.Printf("%v,%v\n", (v.Time-candles[0].Time)/3600, v.Price-3)
 		}
 	}
+}
+
+func TestExample(t *testing.T) {
+
+	candles := []market.Candle{
+		{Time: time.Now().Unix(), Open: 10, Close: 10, High: 10, Low: 14},
+		{Time: time.Now().Add(1 * time.Second).Unix(), Open: 10, Close: 10, High: 15, Low: 12},
+		{Time: time.Now().Add(2 * time.Second).Unix(), Open: 10, Close: 10, High: 20, Low: 10},
+		{Time: time.Now().Add(3 * time.Second).Unix(), Open: 10, Close: 10, High: 15, Low: 12},
+		{Time: time.Now().Add(4 * time.Second).Unix(), Open: 10, Close: 10, High: 10, Low: 14},
+	}
+
+	fractals := WilliamFractals(candles)
+	assert.Len(t, fractals, 2)
+	assert.NotNil(t, fractals)
 }
