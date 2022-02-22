@@ -50,11 +50,13 @@ func TestWilliamsFractal(t *testing.T) {
 func TestExample(t *testing.T) {
 
 	candles := []market.Candle{
-		{Time: time.Now().Unix(), Open: 10, Close: 10, High: 10, Low: 14},
-		{Time: time.Now().Add(1 * time.Second).Unix(), Open: 10, Close: 10, High: 15, Low: 12},
-		{Time: time.Now().Add(2 * time.Second).Unix(), Open: 10, Close: 10, High: 20, Low: 10},
-		{Time: time.Now().Add(3 * time.Second).Unix(), Open: 10, Close: 10, High: 15, Low: 12},
-		{Time: time.Now().Add(4 * time.Second).Unix(), Open: 10, Close: 10, High: 10, Low: 14},
+		{Time: time.Now().Unix(), High: 35268.5, Low: 35267},
+		{Time: time.Now().Add(1 * time.Second).Unix(), High: 35269.5, Low: 35266},
+		{Time: time.Now().Add(2 * time.Second).Unix(), High: 35270.5, Low: 35263},
+		{Time: time.Now().Add(3 * time.Second).Unix(), High: 35267, Low: 35263},
+		{Time: time.Now().Add(4 * time.Second).Unix(), High: 35268, Low: 35265},
+		{Time: time.Now().Add(5 * time.Second).Unix(), High: 35266, Low: 35263},
+		{Time: time.Now().Add(6 * time.Second).Unix(), High: 35266.5, Low: 35264},
 	}
 
 	fractals := WilliamFractals(candles)
