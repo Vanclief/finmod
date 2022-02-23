@@ -17,5 +17,4 @@ func TestNoriaChannel(t *testing.T) {
 	for _, v := range ans {
 		v.Print()
 	}
-	t.Fail()
 }

@@ -18,19 +18,30 @@ func TestMovingAverage(t *testing.T) {
 
 	candles, expectedMA, _, _, _, err := loadCandlesFromFile("./test_dataset/BINANCE_ETHUSD_60.csv")
 	assert.Nil(t, err)
+	assert.NotNil(t, candles)
 
 	ma, err := MovingAverage(candles, length)
-	errNil := assert.Nil(t, err)
-	notNilCandles := assert.NotNil(t, candles)
-	if !errNil && notNilCandles {
-		return
-	}
+	assert.Nil(t, err)
+
 	for k := range expectedMA[length-1:] {
-		assert.LessOrEqual(t, math.Abs(float64(expectedMA[length-1+k]-ma[k])), 0.1)
+		assert.LessOrEqual(t, math.Abs(float64(expectedMA[length-1+k])-ma[k]), 0.1)
 	}
+
 	ma, err = MovingAverage(candles[:length-4], length)
 	assert.NotNil(t, err)
 	assert.Nil(t, ma)
+}
+
+func TestSmoothedMovingAverage(t *testing.T) {
+	length := 55
+
+	candles, _, _, _, _, err := loadCandlesFromFile("./test_dataset/BINANCE_ETHUSD_60.csv")
+	assert.Nil(t, err)
+
+	smma, err := SmoothedMovingAverage(candles, length)
+	assert.Nil(t, err)
+	assert.NotNil(t, smma)
+	assert.Len(t, smma, len(candles)-55)
 }
 
 func loadCandlesFromFile(filepath string) ([]market.Candle, []float32, []float32, []float32, []float32, error) {
