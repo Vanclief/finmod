@@ -6,7 +6,7 @@ import (
 )
 
 func MovingAverage(candles []market.Candle, period int) ([]float64, error) {
-	op := "movingAverage"
+	op := "indicators.MovingAverage"
 
 	if candles == nil {
 		return nil, ez.New(op, ez.EINVALID, "Candle array missing", nil)
@@ -57,12 +57,11 @@ func SmoothedMovingAverage(candles []market.Candle, period int) ([]float64, erro
 	var smmaArray []float64
 
 	for i := range candles {
-
-		if i < period {
+		if i < period-1 {
 			continue
 		}
 
-		sum, err := closingSum(candles[:i], period)
+		sum, err := closingSum(candles[:i+1], period)
 		if err != nil {
 			return nil, ez.Wrap(op, err)
 		}
@@ -70,13 +69,16 @@ func SmoothedMovingAverage(candles []market.Candle, period int) ([]float64, erro
 		if len(smmaArray) == 0 {
 			smma1 := sum / float64(period)
 			smmaArray = append(smmaArray, smma1)
-			continue
+		} else if len(smmaArray) == 1 {
+			smma2 := (smmaArray[0]*(float64(period)-1.0) + candles[i].Close) / float64(period)
+			smmaArray = append(smmaArray, smma2)
+		} else {
+
+			prevSMMA := smmaArray[len(smmaArray)-1]
+			prevSum := prevSMMA * float64(period)
+			smmai := (prevSum - prevSMMA + candles[i].Close) / float64(period)
+			smmaArray = append(smmaArray, smmai)
 		}
-
-		prevSmmai := smmaArray[len(smmaArray)-1]
-
-		smmai := (sum - prevSmmai + candles[i].Close) / float64(period)
-		smmaArray = append(smmaArray, smmai)
 	}
 
 	return smmaArray, nil

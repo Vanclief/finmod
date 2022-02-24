@@ -33,23 +33,53 @@ func TestMovingAverage(t *testing.T) {
 }
 
 func TestSmoothedMovingAverage(t *testing.T) {
-	length := 55
+	candles := []market.Candle{
+		{Close: 35425},
+		{Close: 35456},
+		{Close: 35447}, // Inicial 35444.061
+		{Close: 35434},
+		{Close: 35412},
+		{Close: 35412},
+		{Close: 35406},
+		{Close: 35403},
+		{Close: 35403},
+		{Close: 35406},
+		{Close: 35409},
+		{Close: 35405},
+	}
 
-	candles, _, _, _, _, err := loadCandlesFromFile("./test_dataset/BINANCE_ETHUSD_60.csv")
-	assert.Nil(t, err)
-
-	smma, err := SmoothedMovingAverage(candles, length)
-	assert.Nil(t, err)
-	assert.NotNil(t, smma)
-	assert.Len(t, smma, len(candles)-55)
+	expectedSMMA := []float64{
+		35440.5,
+		35443.75,
+		35439.030,
+		35425.515,
+		35418.758,
+		35412.379,
+		35407.689,
+		35405.345,
+		35405.672,
+		35407.336,
+		35406.168,
+	}
 
 	// candles, _, _, _, _, err = loadCandlesFromFile("./test_dataset/BINANCE_ETHUSD_60.csv")
 	// assert.Nil(t, err)
 
-	// smma, err = SmoothedMovingAverage(candles[:56], length)
-	// assert.Nil(t, err)
-	// assert.NotNil(t, smma)
-	// assert.Len(t, smma, len(candles)-55)
+	smma, err := SmoothedMovingAverage(candles, 2)
+	assert.Nil(t, err)
+	assert.NotNil(t, smma)
+	assert.Len(t, smma, len(expectedSMMA))
+
+	for i := range smma {
+		assert.Less(t, expectedSMMA[i]-smma[i], 0.4, i)
+	}
+
+	candles, _, _, _, _, err = loadCandlesFromFile("./test_dataset/BINANCE_ETHUSD_60.csv")
+	assert.Nil(t, err)
+
+	smma, err = SmoothedMovingAverage(candles, 55)
+	assert.Nil(t, err)
+	assert.NotNil(t, smma)
 }
 
 func loadCandlesFromFile(filepath string) ([]market.Candle, []float32, []float32, []float32, []float32, error) {
