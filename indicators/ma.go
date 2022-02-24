@@ -54,21 +54,45 @@ func SmoothedMovingAverage(candles []market.Candle, period int) ([]float64, erro
 		return nil, ez.New(op, ez.EINVALID, "Period can't be less than 1", nil)
 	}
 
-	var sum float64
-	smmaArray := []float64{0}
+	var smmaArray []float64
 
-	for i, candle := range candles {
+	for i := range candles {
 
-		if i == 0 {
+		if i < period {
 			continue
 		}
 
-		sum = sum + candle.Close
-		n := float64(i + 1)
+		sum, err := closingSum(candles[:i], period)
+		if err != nil {
+			return nil, ez.Wrap(op, err)
+		}
 
-		smma := (sum - smmaArray[i-1]) / n
-		smmaArray = append(smmaArray, smma)
+		if len(smmaArray) == 0 {
+			smma1 := sum / float64(period)
+			smmaArray = append(smmaArray, smma1)
+			continue
+		}
+
+		prevSmmai := smmaArray[len(smmaArray)-1]
+
+		smmai := (sum - prevSmmai + candles[i].Close) / float64(period)
+		smmaArray = append(smmaArray, smmai)
 	}
 
-	return smmaArray[period:], nil
+	return smmaArray, nil
+}
+
+func closingSum(candles []market.Candle, period int) (sum float64, err error) {
+	const op = "indicators.closingSum"
+
+	if len(candles) < period {
+		err = ez.New(op, ez.EINVALID, "Period is larger than the amount of candles", nil)
+		return
+	}
+
+	for _, candle := range candles[len(candles)-period:] {
+		sum = sum + candle.Close
+	}
+
+	return sum, nil
 }
