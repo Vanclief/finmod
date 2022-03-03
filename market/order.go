@@ -39,13 +39,13 @@ const (
 type OrderStatus string
 
 const (
-	//  FulfilledOrder - The entirety of the order was filled
+	// FulfilledOrder - The entirety of the order was filled
 	FulfilledOrder OrderStatus = "fulfilled"
-	//  PartialyFilledOrder - A the order has been filled partialy
+	// PartialyFilledOrder - A the order has been filled partialy
 	PartialyFilledOrder OrderStatus = "partial_fill"
-	//  UnfilledOrder - The order has not been filled
+	// UnfilledOrder - The order has not been filled
 	UnfilledOrder OrderStatus = "unfilled"
-	//  CanceledOrder - The order has been cancelled
+	// CanceledOrder - The order has been cancelled
 	CanceledOrder OrderStatus = "canceled"
 )
 
@@ -102,7 +102,7 @@ func (o *Order) String() string {
 	}
 
 	return fmt.Sprintf(
-		"ID: %s | Action: %s | Type: %s | Pair: %s | Price: %.4f | Volume: %.4f | ExecVolume: %.4f | Fee: $%.4f | Cost: $%.4f | Status: %s | OT: %s | CT: %s",
+		"ID: %s | Action: %s | Type: %s | Pair: %s | Price: %.4f | Volume: %.4f | ExecVolume: %.4f | Fee: $%.4f | Cost: $%.4f | Status: %s | OT: %s | CT: %s\n",
 		o.ID,
 		o.Action,
 		o.Type,

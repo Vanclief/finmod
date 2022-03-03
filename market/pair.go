@@ -15,9 +15,9 @@ func NewPair(base, quote *Asset) *Pair {
 	return &Pair{Base: base, Quote: quote}
 }
 
-// String - Implementes Stringer interface
+// String - Implements Stringer interface
 func (p *Pair) String() string {
-	return fmt.Sprintf("%s/%s", p.Base.Symbol, p.Quote.Symbol)
+	return fmt.Sprintf("%s/%s\n", p.Base.Symbol, p.Quote.Symbol)
 }
 
 // Symbol - Gets the current symbol

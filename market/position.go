@@ -25,6 +25,10 @@ type PositionCloseOrder struct {
 	OrderID string  `json:"order_id"`
 }
 
+func (p *PositionCloseOrder) String() string {
+	return fmt.Sprintf("Price: %f, OrderID: %s\n", p.Price, p.OrderID)
+}
+
 // Position represents a market position
 type Position struct {
 	ID          string             `json:"id"`
@@ -93,7 +97,19 @@ func (p *Position) Update(i interface{}) error {
 }
 
 func (p *Position) String() string {
-	return fmt.Sprintf("ID: %s Type: %s Pair: %s Open: %t OpenPrice: %.2f ClosePrice: %.2f Quantity: %.4f Profit: %.2f OpenTime: %s CloseTime: %s # Trades: %d", p.ID[0:8], p.Type, p.Pair.String(), p.Open, p.OpenPrice, p.ClosePrice, p.Quantity, p.Profit, p.OpenTime, p.CloseTime, len(p.Trades))
+	return fmt.Sprintf("ID: %s Type: %s Pair: %s Open: %t OpenPrice: %.2f ClosePrice: %.2f Quantity: %.4f Profit: %.2f OpenTime: %s CloseTime: %s # Trades: %d\n",
+		p.ID[0:8],
+		p.Type,
+		p.Pair.String(),
+		p.Open,
+		p.OpenPrice,
+		p.ClosePrice,
+		p.Quantity,
+		p.Profit,
+		p.OpenTime,
+		p.CloseTime,
+		len(p.Trades),
+	)
 }
 
 // UnrealizedProfit - Returns the current unrealized profit of the position

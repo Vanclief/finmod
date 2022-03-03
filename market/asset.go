@@ -1,11 +1,18 @@
 package market
 
-import "github.com/vanclief/ez"
+import (
+	"fmt"
+	"github.com/vanclief/ez"
+)
 
 // Asset - A resource with economic value
 type Asset struct {
 	Symbol string `json:"symbol"`
 	Name   string `json:"name"`
+}
+
+func (a *Asset) String() string {
+	return fmt.Sprintf("%s: %s\n", a.Name, a.Symbol)
 }
 
 // NewAsset creates a new Asset from a name and a symbol

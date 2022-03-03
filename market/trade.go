@@ -73,5 +73,15 @@ func (t *Trade) Update(i interface{}) error {
 }
 
 func (t *Trade) String() string {
-	return fmt.Sprintf("ID: %s ExecutionTime: %s Action: %s Type: %s Pair: %s Price: $%.2f Quantity: %.4f Fee: $%.2f Cost: $%.2f", t.ID, t.ExecutionTime, t.Action, t.OrderType, t.Pair, t.Price, t.Quantity, t.Fee, t.Cost)
+	return fmt.Sprintf("ID: %s Execution Time: %s Action: %s Type: %s Pair: %s Price: $%.2f Quantity: %.4f Fee: $%.2f Cost: $%.2f\n",
+		t.ID,
+		t.ExecutionTime,
+		t.Action,
+		t.OrderType,
+		t.Pair,
+		t.Price,
+		t.Quantity,
+		t.Fee,
+		t.Cost,
+	)
 }

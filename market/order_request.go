@@ -58,7 +58,7 @@ func (o *OrderRequest) String() string {
 	}
 
 	return fmt.Sprintf(
-		"Action: %s | Type: %s | Pair: %s | Quantity: %.4f | Price: $%.4f | Total: $%.4f",
+		"Action: %s | Type: %s | Pair: %s | Quantity: %.4f | Price: $%.4f | Total: $%.4f\n",
 		o.Action,
 		o.Type,
 		pairStr,

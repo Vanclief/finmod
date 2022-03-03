@@ -1,6 +1,7 @@
 package market
 
 import (
+	"fmt"
 	"math"
 
 	"github.com/vanclief/ez"
@@ -13,11 +14,19 @@ type OrderBook struct {
 	Bids []OrderBookRow `json:"bids"` // ordered from highest to lowest
 }
 
+func (ob *OrderBook) String() string {
+	return fmt.Sprintf("Time: %v, Asks: %v, Bids: %v\n", ob.Time, ob.Asks, ob.Bids)
+}
+
 // OrderBookRow - A single order from the order book
 type OrderBookRow struct {
 	Price       float64 `json:"price"`
 	Volume      float64 `json:"volume"`
 	AccumVolume float64 `json:"accum_volume"`
+}
+
+func (obr *OrderBookRow) String() string {
+	return fmt.Sprintf("Price: %v, Volume: %v, AccumVolume: %v\n", obr.Price, obr.Volume, obr.AccumVolume)
 }
 
 // Display - returns a

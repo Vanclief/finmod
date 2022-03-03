@@ -24,7 +24,7 @@ type WilliamFractal struct {
 }
 
 func (wf *WilliamFractal) String() string {
-	return fmt.Sprintf("%d %f %v", wf.Time, wf.Price, wf.Type)
+	return fmt.Sprintf("%d %f %v\n", wf.Time, wf.Price, wf.Type)
 }
 
 func WilliamFractals(candles []market.Candle) (fractals []WilliamFractal) {

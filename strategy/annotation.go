@@ -1,6 +1,7 @@
 package strategy
 
 import (
+	"fmt"
 	"github.com/rs/xid"
 	"github.com/vanclief/ez"
 	"github.com/vanclief/state/interfaces"
@@ -8,6 +9,14 @@ import (
 
 type AddAnnotationsAction struct {
 	Annotations []Annotation
+}
+
+func (a *AddAnnotationsAction) String() string {
+	str := "Annotations:\n"
+	for _, v := range a.Annotations {
+		str += fmt.Sprintf("%s\n", v.String())
+	}
+	return str
 }
 
 // Annotation - A note of explanation or comment added to the graph
@@ -19,6 +28,18 @@ type Annotation struct {
 	ExecutionID  string  `json:"execution_id"`
 	Label        string  `json:"label"`
 	Tooltip      string  `json:"tooltip"`
+}
+
+func (a *Annotation) String() string {
+	return fmt.Sprintf("ID: %s, Time: %d, Creation Time: %d, Price: %f, ExecutionID: %s, Label: %s, Tooltip: %s\n",
+		a.ID,
+		a.Time,
+		a.CreationTime,
+		a.Price,
+		a.ExecutionID,
+		a.Label,
+		a.Tooltip,
+	)
 }
 
 // GetSchema returns the database schema for the Annotation model
@@ -45,16 +66,12 @@ func (a *Annotation) Update(i interface{}) error {
 	return nil
 }
 
-// NewAnnotation
 func NewAnnotation(t int64, price float64, label, tooltip string) *Annotation {
-
-	annotation := &Annotation{
+	return &Annotation{
 		ID:      xid.New().String(),
 		Time:    t,
 		Price:   price,
 		Label:   label,
 		Tooltip: tooltip,
 	}
-
-	return annotation
 }

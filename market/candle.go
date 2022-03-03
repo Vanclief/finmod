@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/vanclief/ez"
-	"github.com/vanclief/finmod/utils"
 )
 
 // Candle represents the high, low, open, and closing prices of an asset or security for a specific period
@@ -21,10 +20,9 @@ type Candle struct {
 }
 
 func (p *Candle) String() string {
-	unixTime := time.Unix(p.Time, 0)
 	return fmt.Sprintf(
-		"Time: %s | Open: %.4f | High: %.4f | Low: %.4f | Close: %.4f | Volume: %.4f",
-		unixTime,
+		"Time: %s | Open: %.4f | High: %.4f | Low: %.4f | Close: %.4f | Volume: %.4f\n",
+		time.Unix(p.Time, 0),
 		p.Open,
 		p.High,
 		p.Low,
@@ -63,7 +61,7 @@ func ModifyInterval(candles []Candle, minuteInterval int) ([]Candle, error) {
 	firstCandleIndex := start
 	pivot := candles[start].Time
 	for k, v := range candles[firstCandleIndex+1:] {
-		if (utils.Abs(v.Time-pivot)/60)%minuteInterval == 0 {
+		if int(math.Abs(float64((v.Time-pivot)/60)))%minuteInterval == 0 {
 			compressedCandle, err := compressCandle(candles, start, k+firstCandleIndex+1)
 			if err != nil {
 				return nil, err

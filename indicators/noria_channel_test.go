@@ -1,6 +1,7 @@
 package indicators
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -15,6 +16,6 @@ func TestNoriaChannel(t *testing.T) {
 	assert.Nil(t, err)
 	ans := Iterator(candles, percentageOfCandlesThatMustFitInsideChannel, testCandleFitsInChannelFactor)
 	for _, v := range ans {
-		v.Print()
+		fmt.Println(v.String())
 	}
 }

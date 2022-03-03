@@ -11,8 +11,8 @@ type Coordinate struct {
 	Y float64
 }
 
-func (c *Coordinate) Print() {
-	fmt.Printf("%f, %f\n", c.X, c.Y)
+func (c *Coordinate) String() string {
+	return fmt.Sprintf("%f, %f\n", c.X, c.Y)
 }
 
 type Line struct {
@@ -22,11 +22,11 @@ type Line struct {
 	b           float64
 }
 
-func (l *Line) Print() string {
+func (l *Line) String() string {
 	if l.b < 0 {
-		return fmt.Sprintf("%fx %f", l.m, l.b)
+		return fmt.Sprintf("%fx %f\n", l.m, l.b)
 	} else {
-		return fmt.Sprintf("%fx + %f", l.m, l.b)
+		return fmt.Sprintf("%fx + %f\n", l.m, l.b)
 	}
 }
 
@@ -35,8 +35,8 @@ type Lines struct {
 	highLine Line
 }
 
-func (t *Lines) Print() {
-	fmt.Printf("Lines:\nlowLine: %v\nhighLine: %v\n", t.lowLine.Print(), t.highLine.Print())
+func (t *Lines) String() string {
+	return fmt.Sprintf("Lines:\nlowLine: %v\nhighLine: %v\n", t.lowLine.String(), t.highLine.String())
 }
 
 type ChannelSegment struct {
@@ -46,8 +46,8 @@ type ChannelSegment struct {
 	highLine Line
 }
 
-func (t *ChannelSegment) Print() {
-	fmt.Printf("ChannelSegment:\nstart: %d\nend: %d\nlowLine: %v\nhighLine: %v\n----------------\n", t.start, t.end, t.lowLine.Print(), t.highLine.Print())
+func (t *ChannelSegment) String() string {
+	return fmt.Sprintf("ChannelSegment:\nstart: %d\nend: %d\nlowLine: %v\nhighLine: %v\n----------------\n", t.start, t.end, t.lowLine.String(), t.highLine.String())
 }
 
 func CandlesMidpoint(candles []market.Candle) (candleLowHighDifference []Coordinate) {
