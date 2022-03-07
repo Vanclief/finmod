@@ -33,7 +33,7 @@ func (p *PositionCloseOrder) String() string {
 type Position struct {
 	ID          string             `json:"id"`
 	Type        PositionType       `json:"type"`
-	Pair        *Pair              `json:"pair"`
+	Pair        Pair               `json:"pair"`
 	Open        bool               `json:"open"`
 	TakeProfit  PositionCloseOrder `json:"take_profit"`
 	StopLoss    PositionCloseOrder `json:"stop_loss"`

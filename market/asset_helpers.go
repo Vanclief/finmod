@@ -2,7 +2,7 @@ package market
 
 import "github.com/vanclief/ez"
 
-func NewCryptoAsset(symbol string) (*Asset, error) {
+func NewCryptoAsset(symbol string) (Asset, error) {
 	const op = "market.NewCryptoAsset"
 
 	switch symbol {
@@ -73,11 +73,11 @@ func NewCryptoAsset(symbol string) (*Asset, error) {
 	case "ZED":
 		return NewAsset(symbol, "ZCash")
 	default:
-		return nil, ez.New(op, ez.ENOTFOUND, "No asset with matching symbol found", nil)
+		return Asset{}, ez.New(op, ez.ENOTFOUND, "No asset with matching symbol found", nil)
 	}
 }
 
-func NewForexAsset(symbol string) (*Asset, error) {
+func NewForexAsset(symbol string) (Asset, error) {
 	const op = "market.NewForexAsset"
 
 	switch symbol {
@@ -87,11 +87,11 @@ func NewForexAsset(symbol string) (*Asset, error) {
 		return NewAsset(symbol, "Euro")
 
 	default:
-		return nil, ez.New(op, ez.ENOTFOUND, "No asset with matching symbol found", nil)
+		return Asset{}, ez.New(op, ez.ENOTFOUND, "No asset with matching symbol found", nil)
 	}
 }
 
-func NewStockAsset(symbol string) (*Asset, error) {
+func NewStockAsset(symbol string) (Asset, error) {
 	const op = "market.NewStockAsset"
 
 	switch symbol {
@@ -99,6 +99,6 @@ func NewStockAsset(symbol string) (*Asset, error) {
 		return NewAsset(symbol, "Apple Inc")
 
 	default:
-		return nil, ez.New(op, ez.ENOTFOUND, "No asset with matching symbol found", nil)
+		return Asset{}, ez.New(op, ez.ENOTFOUND, "No asset with matching symbol found", nil)
 	}
 }

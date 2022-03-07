@@ -10,7 +10,7 @@ import (
 type OrderRequest struct {
 	Action     ActionType
 	Type       OrderType
-	Pair       *Pair
+	Pair       Pair
 	Price      float64
 	TakeProfit float64
 	StopLoss   float64
@@ -19,10 +19,10 @@ type OrderRequest struct {
 }
 
 // NewOrderRequest - creates a valid new OrderRequest
-func NewOrderRequest(pair *Pair, action ActionType, orderType OrderType, quantity, price, total float64) (*OrderRequest, error) {
+func NewOrderRequest(pair Pair, action ActionType, orderType OrderType, quantity, price, total float64) (*OrderRequest, error) {
 	const op = "market.NewOrderRequest"
 
-	if pair == nil {
+	if pair.Base.Symbol == "" {
 		return nil, ez.New(op, ez.EINVALID, "Order must have a pair defined", nil)
 	}
 
@@ -52,16 +52,11 @@ func NewOrderRequest(pair *Pair, action ActionType, orderType OrderType, quantit
 
 func (o *OrderRequest) String() string {
 
-	var pairStr string
-	if o.Pair != nil {
-		pairStr = o.Pair.String()
-	}
-
 	return fmt.Sprintf(
 		"Action: %s | Type: %s | Pair: %s | Quantity: %.4f | Price: $%.4f | Total: $%.4f\n",
 		o.Action,
 		o.Type,
-		pairStr,
+		o.Pair.String(),
 		o.Quantity,
 		o.Price,
 		o.Total,

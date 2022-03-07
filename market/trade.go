@@ -14,7 +14,7 @@ type Trade struct {
 	ExecutionTime time.Time  `json:"execution_time"`
 	Action        ActionType `json:"action"`
 	OrderType     OrderType  `json:"order_type"`
-	Pair          *Pair      `json:"pair"`
+	Pair          Pair       `json:"pair"`
 	Price         float64    `json:"price"`
 	Quantity      float64    `json:"quantity"`
 	Fee           float64    `json:"fee"`
@@ -23,7 +23,7 @@ type Trade struct {
 }
 
 // NewTrade creates a new trade
-func NewTrade(id string, executionTime time.Time, actionType ActionType, orderType OrderType, pair *Pair, price, quantity, cost float64) *Trade {
+func NewTrade(id string, executionTime time.Time, actionType ActionType, orderType OrderType, pair Pair, price, quantity, cost float64) *Trade {
 
 	var fee float64
 
