@@ -1,6 +1,8 @@
 package indicators
 
 import (
+	"fmt"
+
 	"github.com/vanclief/ez"
 	"github.com/vanclief/finmod/market"
 )
@@ -41,6 +43,38 @@ func average(candles []market.Candle) float64 {
 		result += candle.Close
 	}
 	return float64(result) / float64(len(candles))
+}
+
+func ExponentialMovingAverage(candles []market.Candle, period int) ([]float64, error) {
+	const op = "indicators.ExponentialMovingAverage"
+
+	if candles == nil {
+		return nil, ez.New(op, ez.EINVALID, "Candle array missing", nil)
+	} else if len(candles) < period {
+		return nil, ez.New(op, ez.EINVALID, "Period argument is larger than the length of candles", nil)
+	} else if period <= 0 {
+		return nil, ez.New(op, ez.EINVALID, "Period can't be less than 1", nil)
+	}
+
+	var emaArray []float64
+	p := 2 / (float64(period) + 1)
+
+	for i := range candles {
+		if i < period-1 {
+			continue
+		}
+
+		if len(emaArray) == 0 {
+			emaArray = append(emaArray, average(candles[:period]))
+		} else {
+			ema := (candles[i].Close * p) + (emaArray[len(emaArray)-1] * (1 - p))
+			emaArray = append(emaArray, ema)
+			fmt.Println("i:", i, "ema:", ema)
+		}
+
+	}
+
+	return emaArray, nil
 }
 
 func SmoothedMovingAverage(candles []market.Candle, period int) ([]float64, error) {

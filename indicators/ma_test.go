@@ -32,6 +32,58 @@ func TestMovingAverage(t *testing.T) {
 	assert.Nil(t, ma)
 }
 
+func TestExponentialMovingAverage(t *testing.T) {
+	candles := []market.Candle{
+		{Close: 34440.1},
+		{Close: 34402.6},
+		{Close: 34365.1}, // Inicial 35444.061
+		{Close: 34385.6},
+		{Close: 34369.6},
+		{Close: 34402.6},
+		{Close: 34424.1},
+		{Close: 34397.6},
+		{Close: 34425.1},
+		{Close: 34438.6},
+		{Close: 34469.6},
+		{Close: 34469.6},
+		{Close: 34479.6},
+		{Close: 34479.6},
+		{Close: 34468.6},
+		{Close: 34494.6},
+		{Close: 34534.6},
+		{Close: 34532.6},
+		{Close: 34526.6},
+		{Close: 34534.6},
+	}
+
+	expectedSMMA := []float64{
+		34470.24,
+		34463.8,
+		34454.4,
+		34447.84,
+		34440.39,
+	}
+
+	// candles, _, _, _, _, err = loadCandlesFromFile("./test_dataset/BINANCE_ETHUSD_60.csv")
+	// assert.Nil(t, err)
+
+	ema, err := ExponentialMovingAverage(candles, 2)
+	assert.Nil(t, err)
+	assert.NotNil(t, ema)
+	assert.Len(t, ema, len(expectedSMMA))
+
+	for i := range ema {
+		assert.Less(t, expectedSMMA[i]-ema[i], 0.4, i)
+	}
+
+	candles, _, _, _, _, err = loadCandlesFromFile("./test_dataset/BINANCE_ETHUSD_60.csv")
+	assert.Nil(t, err)
+
+	ema, err = SmoothedMovingAverage(candles, 55)
+	assert.Nil(t, err)
+	assert.NotNil(t, ema)
+}
+
 func TestSmoothedMovingAverage(t *testing.T) {
 	candles := []market.Candle{
 		{Close: 35425},
