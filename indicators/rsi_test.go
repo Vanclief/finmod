@@ -1,7 +1,6 @@
 package indicators
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -12,9 +11,9 @@ func TestRSI(t *testing.T) {
 	assert.Nil(t, err)
 
 	calculatedRSI, err := RSI(candles, 14)
-	for i := 0; i < 10; i++ {
-		fmt.Println(calculatedRSI[i])
-	}
+	// for i := 0; i < 10; i++ {
+	// fmt.Println(calculatedRSI[i])
+	// }
 	errNil := assert.Nil(t, err)
 	notNilRSI := assert.NotNil(t, calculatedRSI)
 	if !errNil && notNilRSI {

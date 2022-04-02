@@ -1,7 +1,6 @@
 package indicators
 
 import (
-	"fmt"
 	"testing"
 	"time"
 
@@ -37,14 +36,13 @@ func TestWilliamsFractal(t *testing.T) {
 	fractals = WilliamFractals(candles)
 	assert.NotNil(t, fractals)
 
-	// Noria prints
-	for _, v := range fractals {
-		if v.Type == "up" {
-			fmt.Printf("%v,%v\n", (v.Time-candles[0].Time)/3600, v.Price+3)
-		} else {
-			fmt.Printf("%v,%v\n", (v.Time-candles[0].Time)/3600, v.Price-3)
-		}
-	}
+	// for _, v := range fractals {
+	// 	if v.Type == "up" {
+	// 		fmt.Printf("%v,%v\n", (v.Time-candles[0].Time)/3600, v.Price+3)
+	// 	} else {
+	// 		fmt.Printf("%v,%v\n", (v.Time-candles[0].Time)/3600, v.Price-3)
+	// 	}
+	// }
 }
 
 func TestExample(t *testing.T) {

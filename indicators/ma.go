@@ -1,8 +1,6 @@
 package indicators
 
 import (
-	"fmt"
-
 	"github.com/vanclief/ez"
 	"github.com/vanclief/finmod/market"
 )
@@ -60,7 +58,7 @@ func ExponentialMovingAverage(candles []market.Candle, period int) ([]float64, e
 	p := 2 / (float64(period) + 1)
 
 	for i := range candles {
-		if i < period-1 {
+		if i < period {
 			continue
 		}
 
@@ -69,7 +67,6 @@ func ExponentialMovingAverage(candles []market.Candle, period int) ([]float64, e
 		} else {
 			ema := (candles[i].Close * p) + (emaArray[len(emaArray)-1] * (1 - p))
 			emaArray = append(emaArray, ema)
-			fmt.Println("i:", i, "ema:", ema)
 		}
 
 	}

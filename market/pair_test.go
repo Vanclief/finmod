@@ -2,7 +2,6 @@ package market
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -50,10 +49,10 @@ func TestCreateMapping(t *testing.T) {
 	err = json.Unmarshal(body, &result)
 	assert.Nil(t, err)
 
-	for _, symbol := range result.Symbols {
-		mapping := fmt.Sprintf(`"%s": {Base: Asset{Symbol: "%s"}, Quote: Asset{Symbol: "%s"}},`,
-			symbol.Symbol, symbol.BaseAsset, symbol.QuoteAsset)
-		fmt.Println(mapping)
-	}
+	// for _, symbol := range result.Symbols {
+	// mapping := fmt.Sprintf(`"%s": {Base: Asset{Symbol: "%s"}, Quote: Asset{Symbol: "%s"}},`,
+	// symbol.Symbol, symbol.BaseAsset, symbol.QuoteAsset)
+	// fmt.Println(mapping)
+	// }
 
 }
