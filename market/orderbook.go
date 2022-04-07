@@ -84,8 +84,18 @@ func (ob *OrderBook) ApplyUpdate(update OrderBookUpdate) error {
 
 	if update.Side == "ask" {
 		if update.Volume != 0 {
-			row := OrderBookRow{Price: update.Price, Volume: update.Volume}
-			ob.Asks = append(ob.Asks, row)
+			found := false
+			for i := range ob.Asks {
+				if ob.Asks[i].Price == update.Price {
+					ob.Asks[i] = OrderBookRow{Price: update.Price, Volume: update.Volume}
+					found = true
+					break
+				}
+			}
+			if !found {
+				row := OrderBookRow{Price: update.Price, Volume: update.Volume}
+				ob.Asks = append(ob.Asks, row)
+			}
 		} else {
 			for i := range ob.Asks {
 				if ob.Asks[i].Price == update.Price {
@@ -97,8 +107,18 @@ func (ob *OrderBook) ApplyUpdate(update OrderBookUpdate) error {
 
 	} else if update.Side == "bid" {
 		if update.Volume != 0 {
-			row := OrderBookRow{Price: update.Price, Volume: update.Volume}
-			ob.Bids = append(ob.Bids, row)
+			found := false
+			for i := range ob.Bids {
+				if ob.Bids[i].Price == update.Price {
+					ob.Bids[i] = OrderBookRow{Price: update.Price, Volume: update.Volume}
+					found = true
+					break
+				}
+			}
+			if !found {
+				row := OrderBookRow{Price: update.Price, Volume: update.Volume}
+				ob.Bids = append(ob.Bids, row)
+			}
 		} else {
 			for i := range ob.Bids {
 				if ob.Bids[i].Price == update.Price {

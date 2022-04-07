@@ -10,7 +10,7 @@ type OrderBookRow struct {
 }
 
 func (obr *OrderBookRow) String() string {
-	return fmt.Sprintf("Price: %v, Volume: %v, AccumVolume: %v\n", obr.Price, obr.Volume, obr.AccumVolume)
+	return fmt.Sprintf("Price: %.3f, Volume: %.3f, AccumVolume: %.3f\n", obr.Price, obr.Volume, obr.AccumVolume)
 }
 
 type OrderBookUpdate struct {

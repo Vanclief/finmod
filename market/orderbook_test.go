@@ -94,6 +94,8 @@ func TestNewOrderBook(t *testing.T) {
 	ob := NewOrderBook(asks, bids, 5)
 
 	ob.Print()
+
+	ob = NewOrderBook([]OrderBookRow{}, []OrderBookRow{}, 5)
 }
 
 func TestApplyUpdate(t *testing.T) {
@@ -162,6 +164,25 @@ func TestApplyUpdate(t *testing.T) {
 	assert.Nil(t, err)
 
 	update = OrderBookUpdate{8, 0, "ask"}
+	err = ob.ApplyUpdate(update)
+	assert.Nil(t, err)
+
+	update = OrderBookUpdate{7, 3, "ask"}
+	err = ob.ApplyUpdate(update)
+	assert.Nil(t, err)
+
+	ob.Print()
+}
+
+func TestFillOrderBook(t *testing.T) {
+
+	ob := NewOrderBook([]OrderBookRow{}, []OrderBookRow{}, 5)
+
+	update := OrderBookUpdate{7.5, 2, "ask"}
+	err := ob.ApplyUpdate(update)
+	assert.Nil(t, err)
+
+	update = OrderBookUpdate{6, 2, "bid"}
 	err = ob.ApplyUpdate(update)
 	assert.Nil(t, err)
 
