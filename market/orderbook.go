@@ -93,8 +93,14 @@ func (ob *OrderBook) ApplyUpdate(update OrderBookUpdate) error {
 				}
 			}
 			if !found {
-				row := OrderBookRow{Price: update.Price, Volume: update.Volume}
-				ob.Asks = append(ob.Asks, row)
+				for i := range ob.Asks {
+					if ob.Asks[i].Price > update.Price {
+						ob.Asks = append(ob.Asks, OrderBookRow{})
+						copy(ob.Asks[i+1:], ob.Asks[i:])
+						ob.Asks[i] = OrderBookRow{Price: update.Price, Volume: update.Volume}
+						break
+					}
+				}
 			}
 		} else {
 			for i := range ob.Asks {
@@ -116,8 +122,14 @@ func (ob *OrderBook) ApplyUpdate(update OrderBookUpdate) error {
 				}
 			}
 			if !found {
-				row := OrderBookRow{Price: update.Price, Volume: update.Volume}
-				ob.Bids = append(ob.Bids, row)
+				for i := range ob.Bids {
+					if ob.Bids[i].Price < update.Price {
+						ob.Bids = append(ob.Bids, OrderBookRow{})
+						copy(ob.Bids[i+1:], ob.Bids[i:])
+						ob.Bids[i] = OrderBookRow{Price: update.Price, Volume: update.Volume}
+						break
+					}
+				}
 			}
 		} else {
 			for i := range ob.Bids {
@@ -131,7 +143,6 @@ func (ob *OrderBook) ApplyUpdate(update OrderBookUpdate) error {
 		return ez.New(op, ez.EINVALID, "update side must be ask or bid", nil)
 	}
 
-	ob.sort()
 	return nil
 }
 
