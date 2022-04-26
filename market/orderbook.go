@@ -2,11 +2,10 @@ package market
 
 import (
 	"fmt"
+	"github.com/vanclief/ez"
 	"math"
 	"sort"
 	"time"
-
-	"github.com/vanclief/ez"
 )
 
 // OrderBook - A record of active buy and sell orders in a single market
@@ -63,6 +62,16 @@ func (ob *OrderBook) sort() {
 	}
 }
 
+func (ob *OrderBook) limit() {
+	if len(ob.Asks) > ob.MaxDepth {
+		ob.Asks = ob.Asks[:ob.MaxDepth]
+	}
+
+	if len(ob.Bids) > ob.MaxDepth {
+		ob.Bids = ob.Bids[:ob.MaxDepth]
+	}
+}
+
 func (ob *OrderBook) String() string {
 	return fmt.Sprintf("Time: %v, Asks: %v, Bids: %v\n", ob.Time, ob.Asks, ob.Bids)
 }
@@ -89,21 +98,25 @@ func (ob *OrderBook) ApplyUpdate(update OrderBookUpdate) error {
 				if ob.Asks[i].Price == update.Price {
 					ob.Asks[i] = OrderBookRow{Price: update.Price, Volume: update.Volume}
 					found = true
-					break
+					ob.limit()
+					return nil
 				}
 			}
 			if !found {
 				if len(ob.Asks) == 0 {
 					ob.Asks = append(ob.Asks, OrderBookRow{Price: update.Price, Volume: update.Volume})
+					ob.limit()
 					return nil
 				}
 				if len(ob.Asks) == 1 {
 					if ob.Asks[0].Price > update.Price {
 						ob.Asks = append(ob.Asks, ob.Asks[0])
 						ob.Asks[0] = OrderBookRow{Price: update.Price, Volume: update.Volume}
+						ob.limit()
 						return nil
 					} else {
 						ob.Asks = append(ob.Asks, OrderBookRow{Price: update.Price, Volume: update.Volume})
+						ob.limit()
 						return nil
 					}
 				}
@@ -112,15 +125,18 @@ func (ob *OrderBook) ApplyUpdate(update OrderBookUpdate) error {
 						ob.Asks = append(ob.Asks, OrderBookRow{})
 						copy(ob.Asks[i+1:], ob.Asks[i:])
 						ob.Asks[i] = OrderBookRow{Price: update.Price, Volume: update.Volume}
-						break
+						ob.limit()
+						return nil
 					}
 				}
+				ob.Asks = append(ob.Asks, OrderBookRow{Price: update.Price, Volume: update.Volume})
 			}
 		} else {
 			for i := range ob.Asks {
 				if ob.Asks[i].Price == update.Price {
 					ob.Asks = removeElement(ob.Asks, i)
-					break
+					ob.limit()
+					return nil
 				}
 			}
 		}
@@ -132,21 +148,25 @@ func (ob *OrderBook) ApplyUpdate(update OrderBookUpdate) error {
 				if ob.Bids[i].Price == update.Price {
 					ob.Bids[i] = OrderBookRow{Price: update.Price, Volume: update.Volume}
 					found = true
-					break
+					ob.limit()
+					return nil
 				}
 			}
 			if !found {
 				if len(ob.Bids) == 0 {
 					ob.Bids = append(ob.Bids, OrderBookRow{Price: update.Price, Volume: update.Volume})
+					ob.limit()
 					return nil
 				}
 				if len(ob.Bids) == 1 {
 					if ob.Bids[0].Price < update.Price {
 						ob.Bids = append(ob.Bids, ob.Bids[0])
 						ob.Bids[0] = OrderBookRow{Price: update.Price, Volume: update.Volume}
+						ob.limit()
 						return nil
 					} else {
 						ob.Bids = append(ob.Bids, OrderBookRow{Price: update.Price, Volume: update.Volume})
+						ob.limit()
 						return nil
 					}
 				}
@@ -155,15 +175,18 @@ func (ob *OrderBook) ApplyUpdate(update OrderBookUpdate) error {
 						ob.Bids = append(ob.Bids, OrderBookRow{})
 						copy(ob.Bids[i+1:], ob.Bids[i:])
 						ob.Bids[i] = OrderBookRow{Price: update.Price, Volume: update.Volume}
-						break
+						ob.limit()
+						return nil
 					}
 				}
+				ob.Bids = append(ob.Bids, OrderBookRow{Price: update.Price, Volume: update.Volume})
 			}
 		} else {
 			for i := range ob.Bids {
 				if ob.Bids[i].Price == update.Price {
 					ob.Bids = removeElement(ob.Bids, i)
-					break
+					ob.limit()
+					return nil
 				}
 			}
 		}
