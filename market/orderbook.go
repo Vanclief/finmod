@@ -97,6 +97,16 @@ func (ob *OrderBook) ApplyUpdate(update OrderBookUpdate) error {
 					ob.Asks = append(ob.Asks, OrderBookRow{Price: update.Price, Volume: update.Volume})
 					return nil
 				}
+				if len(ob.Asks) == 1 {
+					if ob.Asks[0].Price > update.Price {
+						ob.Asks = append(ob.Asks, ob.Asks[0])
+						ob.Asks[0] = OrderBookRow{Price: update.Price, Volume: update.Volume}
+						return nil
+					} else {
+						ob.Asks = append(ob.Asks, OrderBookRow{Price: update.Price, Volume: update.Volume})
+						return nil
+					}
+				}
 				for i := range ob.Asks {
 					if ob.Asks[i].Price > update.Price {
 						ob.Asks = append(ob.Asks, OrderBookRow{})
@@ -129,6 +139,16 @@ func (ob *OrderBook) ApplyUpdate(update OrderBookUpdate) error {
 				if len(ob.Bids) == 0 {
 					ob.Bids = append(ob.Bids, OrderBookRow{Price: update.Price, Volume: update.Volume})
 					return nil
+				}
+				if len(ob.Bids) == 1 {
+					if ob.Bids[0].Price < update.Price {
+						ob.Bids = append(ob.Bids, ob.Bids[0])
+						ob.Bids[0] = OrderBookRow{Price: update.Price, Volume: update.Volume}
+						return nil
+					} else {
+						ob.Bids = append(ob.Bids, OrderBookRow{Price: update.Price, Volume: update.Volume})
+						return nil
+					}
 				}
 				for i := range ob.Bids {
 					if ob.Bids[i].Price < update.Price {
