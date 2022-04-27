@@ -130,6 +130,8 @@ func (ob *OrderBook) ApplyUpdate(update OrderBookUpdate) error {
 					}
 				}
 				ob.Asks = append(ob.Asks, OrderBookRow{Price: update.Price, Volume: update.Volume})
+				ob.limit()
+				return nil
 			}
 		} else {
 			for i := range ob.Asks {
@@ -180,6 +182,8 @@ func (ob *OrderBook) ApplyUpdate(update OrderBookUpdate) error {
 					}
 				}
 				ob.Bids = append(ob.Bids, OrderBookRow{Price: update.Price, Volume: update.Volume})
+				ob.limit()
+				return nil
 			}
 		} else {
 			for i := range ob.Bids {
