@@ -151,25 +151,25 @@ func TestApplyUpdate(t *testing.T) {
 
 	ob := NewOrderBook(asks, bids, 5)
 
-	update := OrderBookUpdate{1.5, 1, "bid"}
+	update := OrderBookUpdate{13, 1, "bid"}
 	err := ob.ApplyUpdate(update)
 	assert.Nil(t, err)
 
-	update = OrderBookUpdate{3.5, 1.4, "bid"}
-	err = ob.ApplyUpdate(update)
-	assert.Nil(t, err)
-
-	update = OrderBookUpdate{7.5, 2, "ask"}
-	err = ob.ApplyUpdate(update)
-	assert.Nil(t, err)
-
-	update = OrderBookUpdate{8, 0, "ask"}
-	err = ob.ApplyUpdate(update)
-	assert.Nil(t, err)
-
-	update = OrderBookUpdate{7, 3, "ask"}
-	err = ob.ApplyUpdate(update)
-	assert.Nil(t, err)
+	//update = OrderBookUpdate{3.5, 1.4, "bid"}
+	//err = ob.ApplyUpdate(update)
+	//assert.Nil(t, err)
+	//
+	//update = OrderBookUpdate{7.5, 2, "ask"}
+	//err = ob.ApplyUpdate(update)
+	//assert.Nil(t, err)
+	//
+	//update = OrderBookUpdate{8, 0, "ask"}
+	//err = ob.ApplyUpdate(update)
+	//assert.Nil(t, err)
+	//
+	//update = OrderBookUpdate{7, 3, "ask"}
+	//err = ob.ApplyUpdate(update)
+	//assert.Nil(t, err)
 
 	ob.Print()
 }

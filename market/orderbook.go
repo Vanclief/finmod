@@ -11,8 +11,8 @@ import (
 // OrderBook - A record of active buy and sell orders in a single market
 type OrderBook struct {
 	Time     int64          `json:"time"`
-	Asks     []OrderBookRow `json:"asks"` // ordered from lowest to highest
-	Bids     []OrderBookRow `json:"bids"` // ordered from highest to lowest
+	Asks     []OrderBookRow `json:"asks"` // ordered from highest to lowest
+	Bids     []OrderBookRow `json:"bids"` // ordered from lowest to highest
 	MaxDepth int            `json:"max_depth"`
 }
 
@@ -88,11 +88,45 @@ func (ob *OrderBook) Print() {
 	}
 }
 
+func (ob *OrderBook) removeInvalid(side string, price float64) {
+	var found bool
+	if side == "ask" {
+		for i := range ob.Asks {
+			if ob.Asks[i].Price < price {
+				continue
+			} else {
+				startIndex := int(math.Min(float64(i+1), float64(len(ob.Asks)-1)))
+				ob.Asks = ob.Asks[startIndex:]
+				found = true
+				break
+			}
+		}
+		if !found {
+			ob.Asks = []OrderBookRow{}
+		}
+	} else if side == "bid" {
+		for i := range ob.Bids {
+			if ob.Bids[i].Price > price {
+				continue
+			} else {
+				startIndex := int(math.Min(float64(i+1), float64(len(ob.Bids)-1)))
+				ob.Bids = ob.Bids[startIndex:]
+				found = true
+				break
+			}
+		}
+		if !found {
+			ob.Bids = []OrderBookRow{}
+		}
+	}
+}
+
 func (ob *OrderBook) ApplyUpdate(update OrderBookUpdate) error {
 	const op = "OrderBook.ApplyUpdate"
 
 	if update.Side == "ask" {
 		if update.Volume != 0 {
+			ob.removeInvalid("bid", update.Price)
 			found := false
 			for i := range ob.Asks {
 				if ob.Asks[i].Price == update.Price {
@@ -145,6 +179,7 @@ func (ob *OrderBook) ApplyUpdate(update OrderBookUpdate) error {
 
 	} else if update.Side == "bid" {
 		if update.Volume != 0 {
+			ob.removeInvalid("ask", update.Price)
 			found := false
 			for i := range ob.Bids {
 				if ob.Bids[i].Price == update.Price {
