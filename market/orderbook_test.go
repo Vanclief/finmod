@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/vanclief/ez"
 )
 
 func TestNewOrderBook(t *testing.T) {
@@ -266,28 +265,18 @@ func TestFillOrderBook(t *testing.T) {
 }
 
 func TestOrderBookGetDepth(t *testing.T) {
-	sampleOrderBook := getTestOrderBook()
+	var firstOB, secondOB OrderBook
+	firstOB = firstOrderBook()
+	secondOB = secondOrderBook()
+	result, err := CalculateOverlap(firstOB, secondOB)
+	assert.Nil(t, err)
+	assert.Equal(t, 3.0, result)
 
-	index, err := sampleOrderBook.GetDepth(5)
+	firstOB = secondOrderBook()
+	secondOB = firstOrderBook()
+	result, err = CalculateOverlap(firstOB, secondOB)
 	assert.Nil(t, err)
-	assert.Equal(t, float64(5), index)
-	index, err = sampleOrderBook.GetDepth(11)
-	assert.Nil(t, err)
-	assert.Equal(t, float64(11), index)
-	index, err = sampleOrderBook.GetDepth(14.33)
-	assert.Nil(t, err)
-	assert.Equal(t, float64(15), index)
-	index, err = sampleOrderBook.GetDepth(100)
-	assert.NotNil(t, err)
-	assert.Equal(t, ez.ENOTFOUND, ez.ErrorCode(err))
-	assert.Equal(t, float64(0), index)
-	index, err = sampleOrderBook.GetDepth(-2)
-	assert.NotNil(t, err)
-	assert.Equal(t, ez.EINVALID, ez.ErrorCode(err))
-	assert.Equal(t, float64(0), index)
-	index, err = sampleOrderBook.GetDepth(9)
-	assert.Nil(t, err)
-	assert.Equal(t, float64(9), index)
+	assert.Equal(t, 3.0, result)
 }
 
 func getTestOrderBook() OrderBook {
@@ -397,5 +386,131 @@ func getTestOrderBook() OrderBook {
 				AccumVolume: 10,
 			},
 		},
+	}
+}
+
+func firstOrderBook() OrderBook {
+	asks := []OrderBookRow{
+		{
+			Price:  11,
+			Volume: 1,
+		},
+		{
+			Price:  12,
+			Volume: 1.5,
+		},
+		{
+			Price:  13,
+			Volume: 2.5,
+		},
+		{
+			Price:  14,
+			Volume: 3,
+		},
+		{
+			Price:  15,
+			Volume: 4.5,
+		},
+		{
+			Price:  16,
+			Volume: 5.5,
+		},
+	}
+
+	bids := []OrderBookRow{
+		{
+			Price:  9,
+			Volume: 0.5,
+		},
+		{
+			Price:  8,
+			Volume: 1.5,
+		},
+		{
+			Price:  7,
+			Volume: 2,
+		},
+		{
+			Price:  6,
+			Volume: 2.5,
+		},
+		{
+			Price:  5,
+			Volume: 3.5,
+		},
+		{
+			Price:  4,
+			Volume: 5,
+		},
+	}
+	return OrderBook{
+		Time:     time.Now().Unix(),
+		Asks:     asks,
+		Bids:     bids,
+		MaxDepth: 6,
+	}
+}
+
+func secondOrderBook() OrderBook {
+	asks := []OrderBookRow{
+		{
+			Price:  15,
+			Volume: 1,
+		},
+		{
+			Price:  16,
+			Volume: 1,
+		},
+		{
+			Price:  17,
+			Volume: 1,
+		},
+
+		{
+			Price:  18,
+			Volume: 1,
+		},
+		{
+			Price:  19,
+			Volume: 1,
+		},
+		{
+			Price:  20,
+			Volume: 1,
+		},
+	}
+
+	bids := []OrderBookRow{
+		{
+			Price:  13,
+			Volume: 0.7,
+		},
+		{
+			Price:  12,
+			Volume: 2.1,
+		},
+		{
+			Price:  11,
+			Volume: 3.4,
+		},
+		{
+			Price:  10,
+			Volume: 4.2,
+		},
+		{
+			Price:  9,
+			Volume: 5.1,
+		},
+		{
+			Price:  8,
+			Volume: 6,
+		},
+	}
+
+	return OrderBook{
+		Time:     time.Now().Unix(),
+		Asks:     asks,
+		Bids:     bids,
+		MaxDepth: 6,
 	}
 }

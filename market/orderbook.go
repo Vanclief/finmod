@@ -272,3 +272,69 @@ func (ob *OrderBook) GetDepth(price float64) (float64, error) {
 	}
 	return 0, ez.New(op, ez.ENOTFOUND, "No depth for the selected price", nil)
 }
+
+func overlapCalculation(obA, obB OrderBook) (float64, error) {
+	var obAAccumVolume, obBAccumVolume float64
+	var obAIndex, obBIndex int
+	for i := range obA.Asks {
+		if obA.Asks[i].Price > obB.Bids[0].Price {
+			obAIndex = i
+			break
+		} else {
+			obAAccumVolume += obA.Asks[i].Volume
+		}
+	}
+	for i := range obB.Bids {
+		if obB.Bids[i].Price < obA.Asks[0].Price {
+			obBIndex = i
+			break
+		} else {
+			obBAccumVolume += obB.Bids[i].Volume
+		}
+	}
+
+	var obAResult, obBResult float64
+	if obAAccumVolume > obBAccumVolume {
+		var obBVolume float64
+		for _, v := range obA.Bids[:obBIndex] {
+			obBVolume += v.Volume
+			if obBVolume > obBAccumVolume {
+				break
+			} else {
+				obBResult += v.Price * v.Volume
+			}
+		}
+		for _, v := range obA.Asks[:obAIndex] {
+			obAResult += v.Price * v.Volume
+		}
+	} else {
+		var obBVolume float64
+		for _, v := range obB.Bids[:obBIndex] {
+			if obBVolume+v.Volume > obAAccumVolume {
+				obBResult += (obAAccumVolume - obBVolume) * v.Price
+			} else {
+				obBVolume += v.Volume
+				obBResult += v.Price * v.Volume
+			}
+		}
+		for _, v := range obA.Asks[:obAIndex] {
+			obAResult += v.Price * v.Volume
+		}
+	}
+	return math.Abs(obAResult - obBResult), nil
+}
+
+func CalculateOverlap(obA, obB OrderBook) (float64, error) {
+	op := "OrderBook.CalculateOverlap"
+	// First determine if overlap exists
+	if !(obA.Asks[0].Price < obB.Bids[0].Price || obA.Bids[0].Price > obB.Asks[0].Price) {
+		return -1, ez.New(op, ez.ENOTFOUND, "No overlap", nil)
+	}
+	if obA.Asks[0].Price < obB.Bids[0].Price {
+		return overlapCalculation(obA, obB)
+	}
+	if obA.Bids[0].Price > obB.Asks[0].Price {
+		return overlapCalculation(obB, obA)
+	}
+	return 0, nil
+}
