@@ -272,11 +272,23 @@ func TestOrderBookGetDepth(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, 3.0, result)
 
-	firstOB = secondOrderBook()
 	secondOB = firstOrderBook()
+	firstOB = secondOrderBook()
 	result, err = CalculateOverlap(firstOB, secondOB)
 	assert.Nil(t, err)
 	assert.Equal(t, 3.0, result)
+
+	thirdOB := thirdOrderBook()
+	fourthOB := fourthOrderBook()
+	result, err = CalculateOverlap(thirdOB, fourthOB)
+	assert.Nil(t, err)
+	assert.True(t, result-1.1 < 0.01)
+
+	fourthOB = thirdOrderBook()
+	thirdOB = fourthOrderBook()
+	result, err = CalculateOverlap(fourthOB, thirdOB)
+	assert.Nil(t, err)
+	assert.True(t, result-1.1 < 0.01)
 }
 
 func getTestOrderBook() OrderBook {
@@ -503,6 +515,132 @@ func secondOrderBook() OrderBook {
 		},
 		{
 			Price:  8,
+			Volume: 6,
+		},
+	}
+
+	return OrderBook{
+		Time:     time.Now().Unix(),
+		Asks:     asks,
+		Bids:     bids,
+		MaxDepth: 6,
+	}
+}
+
+func thirdOrderBook() OrderBook {
+	asks := []OrderBookRow{
+		{
+			Price:  11,
+			Volume: 2,
+		},
+		{
+			Price:  12,
+			Volume: 3,
+		},
+		{
+			Price:  13,
+			Volume: 3.5,
+		},
+		{
+			Price:  14,
+			Volume: 5,
+		},
+		{
+			Price:  15,
+			Volume: 6.2,
+		},
+		{
+			Price:  16,
+			Volume: 7.1,
+		},
+	}
+
+	bids := []OrderBookRow{
+		{
+			Price:  9,
+			Volume: 2,
+		},
+		{
+			Price:  8,
+			Volume: 3,
+		},
+		{
+			Price:  7,
+			Volume: 3.2,
+		},
+		{
+			Price:  6,
+			Volume: 3.6,
+		},
+		{
+			Price:  5,
+			Volume: 4.1,
+		},
+		{
+			Price:  4,
+			Volume: 5.2,
+		},
+	}
+	return OrderBook{
+		Time:     time.Now().Unix(),
+		Asks:     asks,
+		Bids:     bids,
+		MaxDepth: 6,
+	}
+}
+
+func fourthOrderBook() OrderBook {
+	asks := []OrderBookRow{
+		{
+			Price:  7,
+			Volume: 1,
+		},
+		{
+			Price:  8,
+			Volume: 1.3,
+		},
+		{
+			Price:  9,
+			Volume: 1.9,
+		},
+
+		{
+			Price:  10,
+			Volume: 2.4,
+		},
+		{
+			Price:  11,
+			Volume: 3.2,
+		},
+		{
+			Price:  12,
+			Volume: 4.3,
+		},
+	}
+
+	bids := []OrderBookRow{
+		{
+			Price:  5,
+			Volume: 0.7,
+		},
+		{
+			Price:  4,
+			Volume: 2.1,
+		},
+		{
+			Price:  3,
+			Volume: 3.4,
+		},
+		{
+			Price:  2,
+			Volume: 4.2,
+		},
+		{
+			Price:  1,
+			Volume: 5.1,
+		},
+		{
+			Price:  0.5,
 			Volume: 6,
 		},
 	}

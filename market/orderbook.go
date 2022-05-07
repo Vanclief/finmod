@@ -294,33 +294,50 @@ func overlapCalculation(obA, obB OrderBook) (float64, error) {
 	}
 
 	var obAResult, obBResult float64
-	if obAAccumVolume > obBAccumVolume {
-		var obBVolume float64
-		for _, v := range obA.Bids[:obBIndex] {
+	var obBVolume float64
+
+	for _, v := range obB.Bids[:obBIndex] {
+		if obBVolume+v.Volume > obAAccumVolume {
+			obBResult += (obAAccumVolume - obBVolume) * v.Price
+			break
+		} else {
 			obBVolume += v.Volume
-			if obBVolume > obBAccumVolume {
-				break
-			} else {
-				obBResult += v.Price * v.Volume
-			}
-		}
-		for _, v := range obA.Asks[:obAIndex] {
-			obAResult += v.Price * v.Volume
-		}
-	} else {
-		var obBVolume float64
-		for _, v := range obB.Bids[:obBIndex] {
-			if obBVolume+v.Volume > obAAccumVolume {
-				obBResult += (obAAccumVolume - obBVolume) * v.Price
-			} else {
-				obBVolume += v.Volume
-				obBResult += v.Price * v.Volume
-			}
-		}
-		for _, v := range obA.Asks[:obAIndex] {
-			obAResult += v.Price * v.Volume
+			obBResult += v.Price * v.Volume
 		}
 	}
+	for _, v := range obA.Asks[:obAIndex] {
+		obAResult += v.Price * v.Volume
+	}
+
+	//if obAAccumVolume > obBAccumVolume {
+	//	fmt.Println("obAAccumVolume > obBAccumVolume")
+	//	for _, v := range obA.Bids[:obBIndex] {
+	//		if obBVolume+v.Volume > obBAccumVolume {
+	//			obBResult += (obAAccumVolume - obBVolume) * v.Price
+	//			break
+	//		} else {
+	//			obBResult += v.Price * v.Volume
+	//			obBVolume += v.Volume
+	//		}
+	//	}
+	//	for _, v := range obA.Asks[:obAIndex] {
+	//		obAResult += v.Price * v.Volume
+	//	}
+	//} else {
+	//	fmt.Println("obAAccumVolume <= obBAccumVolume")
+	//	for _, v := range obB.Bids[:obBIndex] {
+	//		if obBVolume+v.Volume > obAAccumVolume {
+	//			obBResult += (obAAccumVolume - obBVolume) * v.Price
+	//			break
+	//		} else {
+	//			obBVolume += v.Volume
+	//			obBResult += v.Price * v.Volume
+	//		}
+	//	}
+	//	for _, v := range obA.Asks[:obAIndex] {
+	//		obAResult += v.Price * v.Volume
+	//	}
+	//}
 	return math.Abs(obAResult - obBResult), nil
 }
 
