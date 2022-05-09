@@ -270,25 +270,25 @@ func TestOrderBookGetDepth(t *testing.T) {
 	secondOB = secondOrderBook()
 	result, err := CalculateOverlap(firstOB, secondOB)
 	assert.Nil(t, err)
-	assert.Equal(t, 3.0, result)
+	assert.True(t, result-4.9 < 0.01)
 
 	secondOB = firstOrderBook()
 	firstOB = secondOrderBook()
 	result, err = CalculateOverlap(firstOB, secondOB)
 	assert.Nil(t, err)
-	assert.Equal(t, 3.0, result)
+	assert.True(t, result-4.9 < 0.01)
 
 	thirdOB := thirdOrderBook()
 	fourthOB := fourthOrderBook()
 	result, err = CalculateOverlap(thirdOB, fourthOB)
 	assert.Nil(t, err)
-	assert.True(t, result-1.1 < 0.01)
+	assert.True(t, result-4.1 < 0.01)
 
 	fourthOB = thirdOrderBook()
 	thirdOB = fourthOrderBook()
 	result, err = CalculateOverlap(fourthOB, thirdOB)
 	assert.Nil(t, err)
-	assert.True(t, result-1.1 < 0.01)
+	assert.True(t, result-4.1 < 0.01)
 }
 
 func getTestOrderBook() OrderBook {
