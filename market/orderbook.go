@@ -88,14 +88,19 @@ func (ob *OrderBook) Print() {
 	}
 }
 
-func (ob *OrderBook) removeInvalid(side string, price float64) {
+func (ob *OrderBook) removeInvalid(side string, price float64) int {
 	var found bool
+	rowsRemoved := 0
 	if side == "ask" {
+		if len(ob.Asks) == 0 || price < ob.Asks[0].Price {
+			return 0
+		}
 		for i := range ob.Asks {
 			if ob.Asks[i].Price < price {
 				continue
 			} else {
 				startIndex := int(math.Min(float64(i+1), float64(len(ob.Asks)-1)))
+				rowsRemoved = len(ob.Asks) - i
 				ob.Asks = ob.Asks[startIndex:]
 				found = true
 				break
@@ -104,12 +109,17 @@ func (ob *OrderBook) removeInvalid(side string, price float64) {
 		if !found {
 			ob.Asks = []OrderBookRow{}
 		}
+		return rowsRemoved
 	} else if side == "bid" {
+		if len(ob.Bids) == 0 || price > ob.Bids[0].Price {
+			return 0
+		}
 		for i := range ob.Bids {
 			if ob.Bids[i].Price > price {
 				continue
 			} else {
 				startIndex := int(math.Min(float64(i+1), float64(len(ob.Bids)-1)))
+				rowsRemoved = len(ob.Bids) - i
 				ob.Bids = ob.Bids[startIndex:]
 				found = true
 				break
@@ -118,7 +128,9 @@ func (ob *OrderBook) removeInvalid(side string, price float64) {
 		if !found {
 			ob.Bids = []OrderBookRow{}
 		}
+		return rowsRemoved
 	}
+	return -1
 }
 
 func (ob *OrderBook) ApplyUpdate(update OrderBookUpdate) error {
